@@ -1,6 +1,7 @@
 package com.holding.pestcontrol.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,14 +16,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "client_detail")
-public class Client {
+@Table(name = "worker_detail")
+public class Worker {
+
     @Id
     private String id;
 
-    @Column(name = "nama_perusahaan")
-    private String namaPerusahaan;
+    @Column(name = "nama_lengkap")
+    private String namaLengkap;
 
+    @Column(name = "alamat")
     private String alamat;
 
     @Column(name = "no_telp")

@@ -2,11 +2,14 @@ package com.holding.pestcontrol.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.holding.pestcontrol.entity.User;
+import com.holding.pestcontrol.entity.Client;
+import com.holding.pestcontrol.entity.Worker;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
@@ -14,33 +17,15 @@ import lombok.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
-public class ReqResUser {
-
-    private int statusCode;
-
-    private String error;
+public class ReqResAdminGetDelete {
 
     private String message;
 
-    private String token;
-
-    private String refreshToken;
-
-    private String expirationTime;
-
     @NotBlank
-    @Size(max = 50)
     @Email
     private String email;
 
-    @NotBlank
-    @Size(max = 50)
-    private String password;
+    private Client detailClient;
 
-    @NotBlank
-    @Size(max = 10)
-    private String role;
-
-    private User user;
-
+    private Worker workerDetail;
 }

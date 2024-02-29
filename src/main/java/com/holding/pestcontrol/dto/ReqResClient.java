@@ -3,6 +3,9 @@ package com.holding.pestcontrol.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.holding.pestcontrol.entity.Client;
+import com.holding.pestcontrol.entity.User;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,17 +22,15 @@ public class ReqResClient {
 
     private String message;
 
-    private Integer id;
+    private String id;
 
     @NotBlank
-    @JsonIgnore
-    private String username;
+    @Email
+    private String email;
 
     private String namaPerusahaan;
 
     private String alamat;
-
-    private String email;
 
     private String noTelp;
 
