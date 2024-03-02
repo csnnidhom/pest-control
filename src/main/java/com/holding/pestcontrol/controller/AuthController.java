@@ -3,12 +3,9 @@ package com.holding.pestcontrol.controller;
 import com.holding.pestcontrol.dto.*;
 import com.holding.pestcontrol.service.AuthService;
 import com.holding.pestcontrol.service.JWTUtils;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,21 +19,21 @@ public class AuthController {
     private final JWTUtils jwtUtils;
 
     @PostMapping("/register")
-    public ResponseEntity<ReqResUser> register(@RequestBody ReqResUser registerRequest){
-        return ResponseEntity.ok(authService.register(registerRequest));
+    public ResponseEntity<ReqResRegister> register(@RequestBody ReqResRegister reqResRegister){
+        return ResponseEntity.ok(authService.register(reqResRegister));
     }
 
     @PostMapping(
         path = "/login"
     )
-    public ResponseEntity<ReqResUser> login(@RequestBody ReqResUser loginRequest){
-        return ResponseEntity.ok(authService.login(loginRequest));
+    public ResponseEntity<ReqResLogin> login(@RequestBody ReqResLogin reqResLogin){
+        return ResponseEntity.ok(authService.login(reqResLogin));
     }
 
-    @PostMapping("/refreshToken")
-    public ResponseEntity<ReqResUser> refresh(@RequestBody ReqResUser refreshTokenRequest){
-        return ResponseEntity.ok(authService.refreshToken(refreshTokenRequest));
-    }
+//    @PostMapping("/refresh-token")
+//    public ResponseEntity<ReqResUser> refresh(@RequestBody ReqResUser refreshTokenRequest){
+//        return ResponseEntity.ok(authService.refreshToken(refreshTokenRequest));
+//    }
 
     @PutMapping("/verifikasi")
     public ResponseSucces<String> verifikasiEmail(@RequestBody RequestVerifikasiEmail request){
@@ -45,9 +42,8 @@ public class AuthController {
     }
 
     @PutMapping("/regenerate-otp")
-    public ResponseSucces<String> regenerateOtp(@RequestBody RequestGenerateOtp request){
-        String response = authService.regenerateOtp(request);
-        return ResponseSucces.<String>builder().data(response).build();
+    public RequestGenerateOtp regenerateOtp(@RequestBody RequestGenerateOtp request){
+        return authService.regenerateOtp(request);
     }
 
     @PutMapping("/forgot-password")
@@ -57,9 +53,14 @@ public class AuthController {
     }
 
     @PutMapping("/set-password")
-    public ResponseSucces<String> setPassword(@RequestBody RequestSetPassword request){
+    public ResponseSucces<String> setPassword(@RequestBody ReqResSetPassword request){
         String response = authService.setPassword(request);
         return ResponseSucces.<String>builder().data(response).build();
+    }
+
+    @PatchMapping
+    public ReqResEditPassword editPassword(@RequestBody ReqResEditPassword reqResEditPassword){
+        return authService.editPassword(reqResEditPassword);
     }
 
 }

@@ -3,6 +3,7 @@ package com.holding.pestcontrol.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.holding.pestcontrol.entity.Worker;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -23,13 +24,11 @@ public class ReqResWorker {
 
     private String id;
 
-    @NotBlank
-    @Email
-    private String email;
-
     private String namaLengkap;
 
     private String alamat;
 
     private String noTelp;
+
+    private Worker detailWorker;
 }

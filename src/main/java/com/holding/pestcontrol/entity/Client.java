@@ -15,7 +15,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "client_detail")
+@Table(
+        name = "client_detail",
+        indexes = @Index(name = "fk_nama_perusahaan", columnList = "nama_perusahaan")
+)
 public class Client {
     @Id
     private String id;

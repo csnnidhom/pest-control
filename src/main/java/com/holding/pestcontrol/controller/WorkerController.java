@@ -1,9 +1,7 @@
 package com.holding.pestcontrol.controller;
 
-import com.holding.pestcontrol.dto.ReqResClient;
 import com.holding.pestcontrol.dto.ReqResWorker;
-import com.holding.pestcontrol.service.client.ClientServiceImpl;
-import com.holding.pestcontrol.service.worker.WorkerServiceImpl;
+import com.holding.pestcontrol.service.worker.profile.WorkerServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +12,8 @@ public class WorkerController {
 
     private final WorkerServiceImpl workerService;
     @GetMapping
-    public ReqResWorker get(@RequestBody ReqResWorker reqResWorker){
-        return workerService.get(reqResWorker);
+    public ReqResWorker get(){
+        return workerService.get();
     }
 
     @PutMapping

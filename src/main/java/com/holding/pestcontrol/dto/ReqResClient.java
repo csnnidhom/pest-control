@@ -20,18 +20,18 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ReqResClient {
 
+    private int statusCode;
+
     private String message;
 
     private String id;
-
-    @NotBlank
-    @Email
-    private String email;
 
     private String namaPerusahaan;
 
     private String alamat;
 
     private String noTelp;
+
+    private Client detailClient;
 
 }

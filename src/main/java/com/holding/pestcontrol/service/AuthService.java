@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,10 +37,10 @@ public class AuthService {
     private final OtpUtil otpUtil;
     private final EmailUtil emailUtil;
 
-    public ReqResUser register(ReqResUser registration){
+    public ReqResRegister register(ReqResRegister registration){
         validationService.validate(registration);
 
-        ReqResUser response = new ReqResUser();
+        ReqResRegister response = new ReqResRegister();
 
         if (userRepository.existsByEmail(registration.getEmail())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username Already Registered");
@@ -61,17 +63,18 @@ public class AuthService {
             user.setOtpGeneratedTime(LocalDateTime.now());
             User userResult = userRepository.save(user);
             response.setUser(userResult);
-            response.setMessage("User Success Successfully");
+            response.setMessage("Register user success");
             response.setStatusCode(200);
         }catch (Exception e){
             response.setStatusCode(500);
-            response.setError(e.getMessage());
+            response.setMessage(e.getMessage());
         }
         return response;
     }
 
-    public ReqResUser login(ReqResUser login){
-        ReqResUser response = new ReqResUser();
+    public ReqResLogin login(ReqResLogin login){
+        validationService.validate(login);
+        ReqResLogin response = new ReqResLogin();
         var user = userRepository.findByEmail(login.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
 
@@ -80,7 +83,7 @@ public class AuthService {
         }else if (!user.isActive()){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "you have not been verified");
         } else if (!user.isStatus()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Your account is not active");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your account is not active");
         }
 
         try {
@@ -100,39 +103,41 @@ public class AuthService {
         return response;
     }
 
-    public ReqResUser refreshToken(ReqResUser refreshToken){
-        ReqResUser response = new ReqResUser();
-        String username = jwtUtils.extractUsername(refreshToken.getToken());
-        User user = userRepository.findByEmail(username).orElseThrow();
-        if (jwtUtils.isTokenValid(refreshToken.getToken(), user)){
-            var jwt = jwtUtils.generateToken(user);
-            response.setStatusCode(200);
-            response.setToken(jwt);
-            response.setRefreshToken(refreshToken.getToken());
-            response.setExpirationTime("24Hours");
-            response.setMessage("Successfully Refresh Token");
-        }
-        response.setStatusCode(500);
-        return response;
-    }
+//    public ReqResUser refreshToken(ReqResUser refreshToken){
+//        ReqResUser response = new ReqResUser();
+//        String username = jwtUtils.extractUsername(refreshToken.getToken());
+//        User user = userRepository.findByEmail(username).orElseThrow();
+//        if (jwtUtils.isTokenValid(refreshToken.getToken(), user)){
+//            var jwt = jwtUtils.generateToken(user);
+//            response.setStatusCode(200);
+//            response.setToken(jwt);
+//            response.setRefreshToken(refreshToken.getToken());
+//            response.setExpirationTime("24Hours");
+//            response.setMessage("Successfully Refresh Token");
+//        }
+//        response.setStatusCode(500);
+//        return response;
+//    }
 
     public String verifikasiEmail(RequestVerifikasiEmail requestVerifikasiEmail){
+        validationService.validate(requestVerifikasiEmail);
         User user = userRepository.findByEmail(requestVerifikasiEmail.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
 
         if (user.isActive()){
-            return "Your account has been verified, please log in";
+            return "Your account has been verified, please login";
         }else if (user.getOtp().equals(requestVerifikasiEmail.getOtp()) && Duration.between(user.getOtpGeneratedTime(), LocalDateTime.now()).getSeconds() < (60)){
             user.setActive(true);
             userRepository.save(user);
-            return "you have been verified, please log in";
+            return "you have been verified, please login";
         }else if (!user.getOtp().equals(requestVerifikasiEmail.getOtp())) {
             return "OTP salah";
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please send verification again because the OTP has expired");
     }
 
-    public String regenerateOtp(RequestGenerateOtp request){
+    public RequestGenerateOtp regenerateOtp(RequestGenerateOtp request){
+        validationService.validate(request);
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
 
@@ -146,10 +151,14 @@ public class AuthService {
         user.setOtp(otp);
         user.setOtpGeneratedTime(LocalDateTime.now());
 
-        return "OTP has been sent to " + request.getEmail() + ", Please verify within 1 minute";
+        return RequestGenerateOtp.builder()
+                .success("OTP sent successfully")
+                .email(user.getEmail())
+                .build();
     }
 
     public void forgotpassword(RequestForgotPassword request){
+        validationService.validate(request);
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
 
@@ -165,7 +174,9 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public String setPassword(RequestSetPassword request){
+    public String setPassword(ReqResSetPassword request){
+        validationService.validate(request);
+
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
 
@@ -174,9 +185,31 @@ public class AuthService {
             userRepository.save(user);
             return "Set new password success, please login again";
         }else if (!user.getOtp().equals(request.getOtp())){
-            return "wrong otp";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong otp");
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please regenerate otp because otp expired and try again");
+    }
+
+    public ReqResEditPassword editPassword(ReqResEditPassword reqResEditPassword) {
+        validationService.validate(reqResEditPassword);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
+
+        if (!BCrypt.checkpw(reqResEditPassword.getOldPassword(), user.getPassword())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The old password you entered is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(reqResEditPassword.getNewPassword()));
+        userRepository.save(user);
+
+        return ReqResEditPassword.builder()
+                .message("Success edit password")
+                .build();
+
     }
 
 }

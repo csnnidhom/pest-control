@@ -1,17 +1,18 @@
-package com.holding.pestcontrol.service.worker;
+package com.holding.pestcontrol.service.worker.profile;
 
 import com.holding.pestcontrol.dto.ReqResClient;
+import com.holding.pestcontrol.dto.ReqResEditPassword;
 import com.holding.pestcontrol.dto.ReqResWorker;
 import com.holding.pestcontrol.entity.Client;
 import com.holding.pestcontrol.entity.User;
 import com.holding.pestcontrol.entity.Worker;
-import com.holding.pestcontrol.repository.ClientRepository;
 import com.holding.pestcontrol.repository.UserRepository;
 import com.holding.pestcontrol.repository.WorkerRepository;
 import com.holding.pestcontrol.service.ValidationService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.jdbc.Work;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,20 +27,18 @@ public class WorkerServiceImpl implements WorkerService{
     private final WorkerRepository workerRepository;
 
     @Override
-    public ReqResWorker get(ReqResWorker reqResWorker) {
-        validationService.validate(reqResWorker);
+    public ReqResWorker get() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
 
-        User user = userRepository.findByEmail(reqResWorker.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found"));
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
 
         Worker worker = (Worker) workerRepository.findByUser(user)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client Not Found "));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Detail Client Not Found "));
 
         return ReqResWorker.builder()
-                .id(worker.getId())
-                .namaLengkap(worker.getNamaLengkap())
-                .alamat(worker.getAlamat())
-                .noTelp(worker.getNoTelp())
+                .detailWorker(worker)
                 .build();
     }
 
@@ -47,7 +46,10 @@ public class WorkerServiceImpl implements WorkerService{
     public ReqResWorker update(ReqResWorker request) {
         validationService.validate(request);
 
-        User user = userRepository.findByEmail(request.getEmail())
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found"));
 
         Worker worker = (Worker) workerRepository.findByUser(user)
@@ -66,4 +68,5 @@ public class WorkerServiceImpl implements WorkerService{
                 .noTelp(worker.getNoTelp())
                 .build();
     }
+
 }

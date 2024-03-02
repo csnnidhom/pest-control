@@ -150,15 +150,19 @@ public class AdminServiceImpl implements AdminService{
         User user = userRepository.findByEmail(reqResAdminGetDelete.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
 
+        String message;
         if (!user.isStatus()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The account is not active");
+            user.setStatus(true);
+            message = "The account is ACTIVE";
+        } else {
+            user.setStatus(false);
+            message = "The account is NOT ACTIVE";
         }
 
-        user.setStatus(false);
         userRepository.save(user);
 
         return ReqResAdminGetDelete.builder()
-                .message("Success, The account is not active")
+                .message(message)
                 .build();
     }
 
