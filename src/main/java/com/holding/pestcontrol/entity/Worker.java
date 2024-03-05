@@ -1,5 +1,6 @@
 package com.holding.pestcontrol.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "worker_detail")
+@Table(
+        name = "worker_detail",
+        indexes = @Index(name = "fk_nama_lengkap", columnList = "nama_lengkap")
+)
 public class Worker {
 
     @Id
@@ -31,14 +35,16 @@ public class Worker {
     @Column(name = "no_telp")
     private String noTelp;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "username", referencedColumnName = "email")
     private User user;
 
+    @JsonIgnore
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @JsonIgnore
     @UpdateTimestamp
     @Column(name = "update_at")
     private LocalDateTime updateAt;

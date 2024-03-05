@@ -1,7 +1,10 @@
 package com.holding.pestcontrol.service.worker.treatment;
 
-import com.holding.pestcontrol.dto.ReqResServiceTreatmentSlip;
+import com.holding.pestcontrol.entity.Scheduling;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface Treatment {
-//    ReqResServiceTreatmentSlip create(ReqResServiceTreatmentSlip reqResServiceTreatmentSlip);
+    List<Scheduling> getAllSchedule();
 }

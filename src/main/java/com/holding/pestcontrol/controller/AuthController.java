@@ -58,7 +58,7 @@ public class AuthController {
         return ResponseSucces.<String>builder().data(response).build();
     }
 
-    @PatchMapping
+    @PatchMapping("/edit-password")
     public ReqResEditPassword editPassword(@RequestBody ReqResEditPassword reqResEditPassword){
         return authService.editPassword(reqResEditPassword);
     }

@@ -6,8 +6,7 @@ import com.holding.pestcontrol.entity.Client;
 import com.holding.pestcontrol.entity.User;
 
 public interface ClientService {
-    ReqResClient get();
-    ReqResClient update(ReqResClient request);
+    ReqResClient getDetailProfile();
+    ReqResClient updateDetailProfile(ReqResClient request);
 
-    ReqResEditPassword editPassword(ReqResEditPassword reqResEditPassword);
 }

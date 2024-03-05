@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.holding.pestcontrol.entity.Chemical;
 import com.holding.pestcontrol.entity.Client;
+import com.holding.pestcontrol.entity.Scheduling;
 import com.holding.pestcontrol.entity.TreatmentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,5 +49,7 @@ public class ReqResServiceTreatmentSlip {
     private String saranClient;
 
     private String ttdClient;
+
+    private Scheduling scheduling;
 
 }

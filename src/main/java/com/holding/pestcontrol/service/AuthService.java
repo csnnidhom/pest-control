@@ -1,13 +1,14 @@
 package com.holding.pestcontrol.service;
 
 import com.holding.pestcontrol.dto.*;
-import com.holding.pestcontrol.entity.Role;
+import com.holding.pestcontrol.enumm.Role;
 import com.holding.pestcontrol.entity.User;
 import com.holding.pestcontrol.repository.UserRepository;
 import com.holding.pestcontrol.util.EmailUtil;
 import com.holding.pestcontrol.util.OtpUtil;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +28,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -90,11 +92,21 @@ public class AuthService {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword()));
             var jwt = jwtUtils.generateToken(user);
             var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), user);
-            response.setStatusCode(200);
-            response.setToken(jwt);
-            response.setRefreshToken(refreshToken);
-            response.setExpirationTime("24Hours");
-            response.setMessage("Successfully Signed In");
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            String role = user.getRole().name();
+
+            if (authentication != null && authentication.isAuthenticated()){
+                response.setStatusCode(200);
+                response.setToken(jwt);
+                response.setRefreshToken(refreshToken);
+                response.setRole(Role.valueOf(role));
+                response.setExpirationTime("24Hours");
+                response.setMessage("Successfully Signed In");
+            }else {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
+            }
+
         }catch (Exception e){
             response.setStatusCode(500);
             response.setError(String.valueOf(user));

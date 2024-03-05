@@ -27,7 +27,7 @@ public class WorkerServiceImpl implements WorkerService{
     private final WorkerRepository workerRepository;
 
     @Override
-    public ReqResWorker get() {
+    public ReqResWorker getDetailProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
@@ -43,7 +43,7 @@ public class WorkerServiceImpl implements WorkerService{
     }
 
     @Override
-    public ReqResWorker update(ReqResWorker request) {
+    public ReqResWorker updateDetailProfile(ReqResWorker request) {
         validationService.validate(request);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

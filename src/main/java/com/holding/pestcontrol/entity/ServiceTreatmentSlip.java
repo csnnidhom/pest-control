@@ -20,13 +20,13 @@ public class ServiceTreatmentSlip {
     @Id
     private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "custumer", referencedColumnName = "nama_perusahaan")
-    private Client client;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_scheduling", referencedColumnName = "id")
+    private Scheduling scheduling;
 
     private String area;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "treatment_type", referencedColumnName = "id")
     private TreatmentType treatmentType;
 
@@ -34,7 +34,7 @@ public class ServiceTreatmentSlip {
 
     private String rekarks;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chemical", referencedColumnName = "id")
     private Chemical chemical;
 

@@ -33,7 +33,7 @@ public class ClientServiceImpl implements ClientService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public ReqResClient get() {
+    public ReqResClient getDetailProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
@@ -50,7 +50,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ReqResClient update(ReqResClient request) {
+    public ReqResClient updateDetailProfile(ReqResClient request) {
         validationService.validate(request);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -75,29 +75,6 @@ public class ClientServiceImpl implements ClientService {
                 .alamat(client.getAlamat())
                 .noTelp(client.getNoTelp())
                 .build();
-    }
-
-    @Override
-    public ReqResEditPassword editPassword(ReqResEditPassword reqResEditPassword) {
-        validationService.validate(reqResEditPassword);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
-
-        if (!BCrypt.checkpw(reqResEditPassword.getOldPassword(), user.getPassword())){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The old password you entered is incorrect");
-        }
-
-        user.setPassword(passwordEncoder.encode(reqResEditPassword.getNewPassword()));
-        userRepository.save(user);
-
-        return ReqResEditPassword.builder()
-                .message("Success edit password")
-                .build();
-
     }
 }
 

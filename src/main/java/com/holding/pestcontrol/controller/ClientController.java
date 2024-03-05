@@ -19,14 +19,14 @@ public class ClientController {
 
     private final ClientServiceImpl clientServiceImpl;
 
-    @GetMapping
-    public ReqResClient get(){
-        return clientServiceImpl.get();
+    @GetMapping("/get-detail-profile")
+    public ReqResClient getDetailProfile(){
+        return clientServiceImpl.getDetailProfile();
     }
 
-    @PutMapping
-    public ReqResClient update(@RequestBody ReqResClient request){
-        return clientServiceImpl.update(request);
+    @PutMapping("/update-detail-profile")
+    public ReqResClient updateDetailProfile(@RequestBody ReqResClient request){
+        return clientServiceImpl.updateDetailProfile(request);
     }
 
 }

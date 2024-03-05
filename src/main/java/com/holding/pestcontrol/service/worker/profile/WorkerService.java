@@ -6,7 +6,7 @@ import com.holding.pestcontrol.dto.ReqResWorker;
 import org.springframework.http.ResponseEntity;
 
 public interface WorkerService {
-    ReqResWorker get();
-    ReqResWorker update(ReqResWorker request);
+    ReqResWorker getDetailProfile();
+    ReqResWorker updateDetailProfile(ReqResWorker request);
 
 }

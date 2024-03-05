@@ -1,4 +1,4 @@
-package com.holding.pestcontrol.entity;
+package com.holding.pestcontrol.enumm;
 
 public enum Role {
     ADMIN,CLIENT,WORKER

@@ -2,6 +2,7 @@ package com.holding.pestcontrol.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.holding.pestcontrol.enumm.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -29,6 +30,8 @@ public class ReqResLogin {
     private String refreshToken;
 
     private String expirationTime;
+
+    private Role role;
 
     @NotBlank
     @Size(max = 50)

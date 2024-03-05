@@ -1,9 +1,14 @@
 package com.holding.pestcontrol.controller;
 
 import com.holding.pestcontrol.dto.ReqResWorker;
+import com.holding.pestcontrol.entity.Scheduling;
 import com.holding.pestcontrol.service.worker.profile.WorkerServiceImpl;
+import com.holding.pestcontrol.service.worker.treatment.TreatmentImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/worker")
@@ -11,14 +16,21 @@ import org.springframework.web.bind.annotation.*;
 public class WorkerController {
 
     private final WorkerServiceImpl workerService;
-    @GetMapping
-    public ReqResWorker get(){
-        return workerService.get();
+
+    private final TreatmentImpl treatmentService;
+    @GetMapping("/get-detail-profile")
+    public ReqResWorker getDetailProfile(){
+        return workerService.getDetailProfile();
     }
 
-    @PutMapping
-    public ReqResWorker update(@RequestBody ReqResWorker request){
-        return workerService.update(request);
+    @PutMapping("/update-detail-profile")
+    public ReqResWorker updateDetailProfile(@RequestBody ReqResWorker request){
+        return workerService.updateDetailProfile(request);
+    }
+
+    @GetMapping("/get-schedul")
+    public List<Scheduling> getSchedule(){
+        return treatmentService.getAllSchedule();
     }
 
 }

@@ -31,7 +31,7 @@ public class Client {
     @Column(name = "no_telp")
     private String noTelp;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "username", referencedColumnName = "email")
     private User user;
 
