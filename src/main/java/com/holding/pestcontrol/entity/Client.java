@@ -1,5 +1,6 @@
 package com.holding.pestcontrol.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,10 +36,12 @@ public class Client {
     @JoinColumn(name = "username", referencedColumnName = "email")
     private User user;
 
+    @JsonIgnore
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @JsonIgnore
     @UpdateTimestamp
     @Column(name = "update_at")
     private LocalDateTime updateAt;
