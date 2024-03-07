@@ -78,4 +78,9 @@ public class AdminController {
     public ReqResDeleteScheduling deleteScheduling(@RequestBody ReqResDeleteScheduling reqResDeleteScheduling){
         return adminServiceImpl.deleteSchduling(reqResDeleteScheduling);
     }
+
+    @GetMapping("/get-all-treatment")
+    public List<TreatmentDTO> getAllTreatment(){
+        return adminServiceImpl.getAllTreatment();
+    }
 }

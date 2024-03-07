@@ -2,17 +2,14 @@ package com.holding.pestcontrol.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.holding.pestcontrol.entity.Chemical;
-import com.holding.pestcontrol.entity.Client;
-import com.holding.pestcontrol.entity.Scheduling;
-import com.holding.pestcontrol.entity.TreatmentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -20,23 +17,27 @@ import java.util.Date;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ReqResServiceTreatmentSlip {
+public class TreatmentDTO {
 
-    private String id ;
+    private String message;
 
-    private Client client;
+    private String idTreatment;
+
+    private String idSchedule;
+
+    private List<SchedulingDTO> schedulingDTO;
 
     private String area;
 
-    private TreatmentType treatmentType;
+    private List<TreatmentTypeDTO> treatmentTypeDTO;
 
     private String ai;
 
     private String rekarks;
 
-    private Chemical chemical;
+    private List<ChemicalDTO> chemicalDTO;
 
-    private Date date;
+    private LocalDate date;
 
     private LocalTime timeIn;
 
@@ -44,12 +45,6 @@ public class ReqResServiceTreatmentSlip {
 
     private String rekomendasiWorker;
 
-    private String ttdWorker;
-
     private String saranClient;
-
-    private String ttdClient;
-
-    private Scheduling scheduling;
 
 }

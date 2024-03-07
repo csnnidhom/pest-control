@@ -34,4 +34,5 @@ public interface AdminService {
 
     ReqResDeleteScheduling deleteSchduling(ReqResDeleteScheduling reqResDeleteScheduling);
 
+    List<TreatmentDTO> getAllTreatment();
 }

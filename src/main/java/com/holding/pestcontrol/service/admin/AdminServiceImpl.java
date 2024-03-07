@@ -5,10 +5,7 @@ import com.holding.pestcontrol.entity.*;
 import com.holding.pestcontrol.enumm.FreqType;
 import com.holding.pestcontrol.enumm.Role;
 import com.holding.pestcontrol.enumm.WorkingType;
-import com.holding.pestcontrol.repository.ClientRepository;
-import com.holding.pestcontrol.repository.SchedulingRepository;
-import com.holding.pestcontrol.repository.UserRepository;
-import com.holding.pestcontrol.repository.WorkerRepository;
+import com.holding.pestcontrol.repository.*;
 import com.holding.pestcontrol.service.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,14 +24,11 @@ import java.util.UUID;
 public class AdminServiceImpl implements AdminService{
 
     private final ValidationService validationService;
-
     private final UserRepository userRepository;
-
     private final ClientRepository clientRepository;
-
     private final WorkerRepository workerRepository;
-
     private final SchedulingRepository schedulingRepository;
+    private final ServiceTreatmenSlipRepository serviceTreatmenSlipRepository;
 
     @Override
     public Role[] getRole() {
@@ -297,6 +293,93 @@ public class AdminServiceImpl implements AdminService{
                 .id(reqResDeleteScheduling.getId())
                 .build();
 
+    }
+
+    @Override
+    public List<TreatmentDTO> getAllTreatment() {
+        List<ServiceTreatmentSlip> entitas = serviceTreatmenSlipRepository.findAll();
+        return entitas.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private TreatmentDTO convertToDTO(ServiceTreatmentSlip serviceTreatmentSlip) {
+        TreatmentDTO dto = new TreatmentDTO();
+        dto.setIdTreatment(serviceTreatmentSlip.getId());
+        dto.setSchedulingDTO(convertScheduleToDTO(Collections.singletonList(serviceTreatmentSlip.getScheduling())));
+        dto.setArea(serviceTreatmentSlip.getArea());
+        dto.setTreatmentTypeDTO(convertTreatmentTypeToDTO(Collections.singletonList(serviceTreatmentSlip.getTreatmentType())));
+        dto.setAi(String.valueOf(serviceTreatmentSlip.isAi()));
+        dto.setRekarks(serviceTreatmentSlip.getRekarks());
+        dto.setChemicalDTO(convertChemicalToDTO(Collections.singletonList(serviceTreatmentSlip.getChemical())));
+        dto.setDate(serviceTreatmentSlip.getDate());
+        dto.setTimeIn(serviceTreatmentSlip.getTimeIn());
+        dto.setTimeOut(serviceTreatmentSlip.getTimeOut());
+        dto.setRekomendasiWorker(serviceTreatmentSlip.getRekomendasiWorker());
+        dto.setSaranClient(serviceTreatmentSlip.getSaranClient());
+        return dto;
+    }
+
+    private List<ChemicalDTO> convertChemicalToDTO(List<Chemical> chemical) {
+        return chemical.stream()
+                .map(ToChemicalDTO -> {
+                    ChemicalDTO chemicalDTO = new ChemicalDTO();
+                    chemicalDTO.setIdChemical(ToChemicalDTO.getId());
+                    chemicalDTO.setBahanAktif(ToChemicalDTO.getBahanAktif());
+                    chemicalDTO.setDosis(ToChemicalDTO.getDosis());
+                    chemicalDTO.setJumlah(ToChemicalDTO.getJumlah());
+                    chemicalDTO.setKeterangan(ToChemicalDTO.getKeterangan());
+                    return chemicalDTO;
+                }).collect(Collectors.toList());
+    }
+
+    private List<TreatmentTypeDTO> convertTreatmentTypeToDTO(List<TreatmentType> treatmentType) {
+        return treatmentType.stream()
+                .map(ToTreatmentDTO -> {
+                    TreatmentTypeDTO treatmentTypeDTO = new TreatmentTypeDTO();
+                    treatmentTypeDTO.setIdTreatmentType(ToTreatmentDTO.getId());
+                    treatmentTypeDTO.setCf(ToTreatmentDTO.isCf());
+                    treatmentTypeDTO.setHf(ToTreatmentDTO.isHf());
+                    treatmentTypeDTO.setS(ToTreatmentDTO.isS());
+                    treatmentTypeDTO.setB(ToTreatmentDTO.isB());
+                    treatmentTypeDTO.setLv(ToTreatmentDTO.isLv());
+                    treatmentTypeDTO.setT(ToTreatmentDTO.isT());
+                    treatmentTypeDTO.setOt(ToTreatmentDTO.isOt());
+                    return treatmentTypeDTO;
+                }).collect(Collectors.toList());
+    }
+
+    private List<SchedulingDTO> convertScheduleToDTO(List<Scheduling> scheduling) {
+        return scheduling.stream()
+                .map(ToSchedulingDTO -> {
+                    SchedulingDTO schedulingDTO = new SchedulingDTO();
+                    schedulingDTO.setIdSchedule(ToSchedulingDTO.getId());
+                    schedulingDTO.setClient(convertClientToDTO(Collections.singletonList(ToSchedulingDTO.getClient())));
+                    schedulingDTO.setWorker(convertWorkerToDTO(Collections.singletonList(ToSchedulingDTO.getWorker())));
+                    return schedulingDTO;
+                }).collect(Collectors.toList());
+    }
+
+    private List<WorkerDTO> convertWorkerToDTO(List<Worker> worker) {
+        return worker.stream()
+                .map(ToWorkerDTO -> {
+                    WorkerDTO workerDTO = new WorkerDTO();
+                    workerDTO.setIdWorker(ToWorkerDTO.getId());
+                    workerDTO.setNamaLengkap(ToWorkerDTO.getNamaLengkap());
+                    workerDTO.setAlamat(ToWorkerDTO.getAlamat());
+                    workerDTO.setNoTelp(ToWorkerDTO.getNoTelp());
+                    return workerDTO;
+                }).collect(Collectors.toList());
+    }
+
+    private List<ClientDTO> convertClientToDTO(List<Client> clients) {
+        return clients.stream()
+                .map(ToClientDTO ->{
+                    ClientDTO clientDTO = new ClientDTO();
+                    clientDTO.setIdClient(ToClientDTO.getId());
+                    clientDTO.setNamaPerusahaan(ToClientDTO.getNamaPerusahaan());
+                    return clientDTO;
+                }).collect(Collectors.toList());
     }
 
 }

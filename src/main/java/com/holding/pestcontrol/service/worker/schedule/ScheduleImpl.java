@@ -36,8 +36,6 @@ public class ScheduleImpl implements Schedule {
 
     private final ServiceTreatmenSlipRepository serviceTreatmenSlipRepository;
 
-    private ScheduleSpecification scheduleSpecification;
-
     @Override
     public List<Scheduling> getAllSchedule() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

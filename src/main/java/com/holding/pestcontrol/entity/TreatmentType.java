@@ -19,7 +19,7 @@ public class TreatmentType {
     @Id
     private String id;
 
-    private boolean ch;
+    private boolean cf;
 
     private boolean hf;
 
