@@ -1,34 +1,99 @@
-package com.holding.pestcontrol.service.worker.treatment;
+package com.holding.pestcontrol.service.worker;
 
-import com.holding.pestcontrol.dto.ClientDTO;
 import com.holding.pestcontrol.dto.ReqResTreatment;
-import com.holding.pestcontrol.dto.SchedulingDTO;
+import com.holding.pestcontrol.dto.ReqResWorker;
 import com.holding.pestcontrol.entity.*;
 import com.holding.pestcontrol.repository.*;
+import com.holding.pestcontrol.service.SpecificationSearch;
 import com.holding.pestcontrol.service.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collections;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TreatmentImpl implements Treatment{
+public class WorkerServiceImpl implements WorkerService{
 
     private final ValidationService validationService;
-    private final ServiceTreatmenSlipRepository serviceTreatmenSlipRepository;
+    private final UserRepository userRepository;
+    private final WorkerRepository workerRepository;
     private final SchedulingRepository schedulingRepository;
     private final TreatmentTypeRepository treatmentTypeRepository;
     private final ChemicalRepository chemicalRepository;
-    private final UserRepository userRepository;
-    private final WorkerRepository workerRepository;
+    private final ServiceTreatmenSlipRepository serviceTreatmenSlipRepository;
+
+    @Override
+    public ReqResWorker getDetailProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
+
+        Worker worker = (Worker) workerRepository.findByUser(user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Detail Client Not Found "));
+
+        return ReqResWorker.builder()
+                .detailWorker(worker)
+                .build();
+    }
+
+    @Override
+    public ReqResWorker updateDetailProfile(ReqResWorker request) {
+        validationService.validate(request);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found"));
+
+        Worker worker = (Worker) workerRepository.findByUser(user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id Detail Client Not Found "));
+
+        worker.setUser(user);
+        worker.setNamaLengkap(request.getNamaLengkap());
+        worker.setNoTelp(request.getNoTelp());
+        workerRepository.save(worker);
+
+        return ReqResWorker.builder()
+                .message("Update Success")
+                .id(worker.getId())
+                .namaLengkap(worker.getNamaLengkap())
+                .alamat(worker.getAlamat())
+                .noTelp(worker.getNoTelp())
+                .build();
+    }
+
+    @Override
+    public List<Scheduling> getAllSchedule() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found"));
+
+        Worker worker = (Worker) workerRepository.findByUser(user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id Detail Client Not Found"));
+
+//        return schedulingRepository.findAllByWorker(worker);
+
+        Specification<Scheduling> specification = SpecificationSearch.findAllScheduleByWorkerAuthentication();
+
+        return schedulingRepository.findAll(specification);
+
+
+    }
 
     @Override
     public ReqResTreatment createTreatment(ReqResTreatment reqResTreatment) {
@@ -88,4 +153,5 @@ public class TreatmentImpl implements Treatment{
 
         return response;
     }
+
 }

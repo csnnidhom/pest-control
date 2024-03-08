@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
-public class ReqResAdminCreateUpdate {
+public class ReqResAdminUpdateDetailUser {
 
     private String message;
 

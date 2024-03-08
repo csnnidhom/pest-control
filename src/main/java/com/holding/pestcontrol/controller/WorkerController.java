@@ -3,28 +3,39 @@ package com.holding.pestcontrol.controller;
 import com.holding.pestcontrol.dto.ReqResTreatment;
 import com.holding.pestcontrol.dto.ReqResWorker;
 import com.holding.pestcontrol.entity.Scheduling;
-import com.holding.pestcontrol.entity.ServiceTreatmentSlip;
-import com.holding.pestcontrol.repository.ServiceTreatmenSlipRepository;
-import com.holding.pestcontrol.service.worker.profile.WorkerServiceImpl;
-import com.holding.pestcontrol.service.worker.schedule.ScheduleImpl;
-import com.holding.pestcontrol.service.worker.treatment.TreatmentImpl;
+import com.holding.pestcontrol.entity.User;
+import com.holding.pestcontrol.entity.Worker;
+import com.holding.pestcontrol.repository.SchedulingRepository;
+import com.holding.pestcontrol.repository.UserRepository;
+import com.holding.pestcontrol.repository.WorkerRepository;
+import com.holding.pestcontrol.service.SpecificationSearch;
+import com.holding.pestcontrol.service.worker.WorkerServiceImpl;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/worker")
 @RequiredArgsConstructor
+@Slf4j
 public class WorkerController {
 
     private final WorkerServiceImpl workerService;
-    private final ScheduleImpl scheduleService;
-    private final TreatmentImpl treatmentService;
-
+    private final UserRepository userRepository;
+    private final WorkerRepository workerRepository;
+    private final SchedulingRepository schedulingRepository;
 
     @GetMapping("/get-detail-profile")
     public ReqResWorker getDetailProfile(){
@@ -38,22 +49,12 @@ public class WorkerController {
 
     @GetMapping("/get-schedule")
     public List<Scheduling> getSchedule(){
-        return scheduleService.getAllSchedule();
-    }
-
-    @GetMapping("/get-schedule-by-client")
-    public List<Scheduling> getScheduleByClient(
-            @RequestParam(required = false) String companyName,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
-        )
-    {
-        return scheduleService.searchSchedule(companyName, startDate, endDate);
+        return workerService.getAllSchedule();
     }
 
     @PostMapping("/create-treatment")
     public ReqResTreatment createTreatment(@RequestBody ReqResTreatment reqResTreatment){
-        return treatmentService.createTreatment(reqResTreatment);
+        return workerService.createTreatment(reqResTreatment);
     }
 
 }

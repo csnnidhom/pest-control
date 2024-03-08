@@ -6,13 +6,16 @@ import com.holding.pestcontrol.enumm.FreqType;
 import com.holding.pestcontrol.enumm.Role;
 import com.holding.pestcontrol.enumm.WorkingType;
 import com.holding.pestcontrol.repository.*;
+import com.holding.pestcontrol.service.SpecificationSearch;
 import com.holding.pestcontrol.service.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -46,12 +49,12 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
-    public ReqResAdminCreateUpdate create(ReqResAdminCreateUpdate reqResAdminCreateUpdate) {
-        validationService.validate(reqResAdminCreateUpdate);
+    public ReqResAdminCreateDetailUser create(ReqResAdminCreateDetailUser reqResAdminCreateDetailUser) {
+        validationService.validate(reqResAdminCreateDetailUser);
 
-        ReqResAdminCreateUpdate response = new ReqResAdminCreateUpdate();
+        ReqResAdminCreateDetailUser response = new ReqResAdminCreateDetailUser();
 
-        User user = userRepository.findByEmail(reqResAdminCreateUpdate.getEmail())
+        User user = userRepository.findByEmail(reqResAdminCreateDetailUser.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found"));
 
         String role = user.getRole().name();
@@ -60,9 +63,9 @@ public class AdminServiceImpl implements AdminService{
             Client client = new Client();
             client.setId(UUID.randomUUID().toString());
             client.setUser(user);
-            client.setNamaPerusahaan(reqResAdminCreateUpdate.getNamaPerusahaan());
-            client.setAlamat(reqResAdminCreateUpdate.getAlamat());
-            client.setNoTelp(reqResAdminCreateUpdate.getNoTelp());
+            client.setNamaPerusahaan(reqResAdminCreateDetailUser.getNamaPerusahaan());
+            client.setAlamat(reqResAdminCreateDetailUser.getAlamat());
+            client.setNoTelp(reqResAdminCreateDetailUser.getNoTelp());
             clientRepository.save(client);
             response.setMessage("Success insert detail client");
             response.setId(client.getId());
@@ -71,9 +74,9 @@ public class AdminServiceImpl implements AdminService{
             Worker worker = new Worker();
             worker.setId(UUID.randomUUID().toString());
             worker.setUser(user);
-            worker.setNamaLengkap(reqResAdminCreateUpdate.getNamaLengkap());
-            worker.setAlamat(reqResAdminCreateUpdate.getAlamat());
-            worker.setNoTelp(reqResAdminCreateUpdate.getNoTelp());
+            worker.setNamaLengkap(reqResAdminCreateDetailUser.getNamaLengkap());
+            worker.setAlamat(reqResAdminCreateDetailUser.getAlamat());
+            worker.setNoTelp(reqResAdminCreateDetailUser.getNoTelp());
             workerRepository.save(worker);
             response.setMessage("Success insert detail worker");
             response.setId(worker.getId());
@@ -84,39 +87,78 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
-    public ReqResAdminCreateUpdate update(ReqResAdminCreateUpdate reqResAdminCreateUpdate) {
-        validationService.validate(reqResAdminCreateUpdate);
+    public ReqResAdminUpdateDetailUser update(ReqResAdminUpdateDetailUser reqResAdminUpdateDetailUser) {
+        validationService.validate(reqResAdminUpdateDetailUser);
 
-        ReqResAdminCreateUpdate response = new ReqResAdminCreateUpdate();
+        ReqResAdminUpdateDetailUser response = new ReqResAdminUpdateDetailUser();
 
-        User user = userRepository.findByEmail(reqResAdminCreateUpdate.getEmail())
+        User user = userRepository.findByEmail(reqResAdminUpdateDetailUser.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found"));
 
 
         String role = user.getRole().name();
 
         if (role.equals("CLIENT")){
-            Client client = (Client) clientRepository.findByUserAndId(user, reqResAdminCreateUpdate.getId())
+            Client client = (Client) clientRepository.findByUserAndId(user, reqResAdminUpdateDetailUser.getId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id not found"));
 
-            client.setNamaPerusahaan(reqResAdminCreateUpdate.getNamaPerusahaan());
-            client.setAlamat(reqResAdminCreateUpdate.getAlamat());
-            client.setNoTelp(reqResAdminCreateUpdate.getNoTelp());
+            client.setNamaPerusahaan(reqResAdminUpdateDetailUser.getNamaPerusahaan());
+            client.setAlamat(reqResAdminUpdateDetailUser.getAlamat());
+            client.setNoTelp(reqResAdminUpdateDetailUser.getNoTelp());
             clientRepository.save(client);
             response.setMessage("Success update detail client");
             response.setId(client.getId());
 
         } else if (role.equals("WORKER")) {
-            Worker worker = (Worker) workerRepository.findByUserAndId(user, reqResAdminCreateUpdate.getId())
+            Worker worker = (Worker) workerRepository.findByUserAndId(user, reqResAdminUpdateDetailUser.getId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id not found"));
 
-            worker.setNamaLengkap(reqResAdminCreateUpdate.getNamaLengkap());
-            worker.setNoTelp(reqResAdminCreateUpdate.getNoTelp());
+            worker.setNamaLengkap(reqResAdminUpdateDetailUser.getNamaLengkap());
+            worker.setNoTelp(reqResAdminUpdateDetailUser.getNoTelp());
             workerRepository.save(worker);
             response.setMessage("Success update detail worker");
             response.setId(worker.getId());
         }
         return response;
+    }
+
+    @Override
+    public List<Client> searchClient(String companyName, String companyAddress, String companyEmail) {
+        Specification<Client> specification = Specification.where(null);
+
+
+        if (companyName != null && !companyName.isEmpty()){
+            specification = specification.and(SpecificationSearch.companyNameClient(companyName));
+        }
+
+        if (companyAddress != null && !companyAddress.isEmpty()){
+            specification = specification.and(SpecificationSearch.companyAddress(companyAddress));
+        }
+
+        if (companyEmail != null && !companyEmail.isEmpty()){
+            specification = specification.and(SpecificationSearch.companyEmail(companyEmail));
+        }
+
+        return clientRepository.findAll(specification);
+    }
+
+    @Override
+    public List<Worker> searchWorker(String workerFullname, String wokerAddress, String workerEmail) {
+        Specification<Worker> specification = Specification.where(null);
+
+        if (workerFullname != null && !workerFullname.isEmpty()){
+            specification = specification.and(SpecificationSearch.workerFullname(workerFullname));
+        }
+
+        if (wokerAddress != null && !wokerAddress.isEmpty()){
+            specification = specification.and(SpecificationSearch.workerAddress(wokerAddress));
+        }
+
+        if (workerEmail != null && !workerEmail.isEmpty()){
+            specification = specification.and(SpecificationSearch.workerEmail(workerEmail));
+        }
+
+        return workerRepository.findAll(specification);
     }
 
     @Override
@@ -147,13 +189,6 @@ public class AdminServiceImpl implements AdminService{
                 .detailClient(client)
                 .workerDetail(worker)
                 .build();
-    }
-
-    @Override
-    public List<User> getAllDataByRole(Role role) {
-        validationService.validate(role);
-
-        return userRepository.findByRole(role);
     }
 
     @Override
@@ -227,9 +262,20 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
-    public List<Scheduling> getAllScheduling() {
-        return schedulingRepository.findAll();
+    public List<Scheduling> searchSchedule(String companyName, LocalDate startDate, LocalDate endDate) {
+        Specification<Scheduling> specification = Specification.where(null);
+
+        if (companyName != null && !companyName.isEmpty()){
+            specification = specification.and(SpecificationSearch.companyNameSchedule(companyName));
+        }
+
+        if (startDate != null && endDate != null){
+            specification = specification.and(SpecificationSearch.dateWorking(startDate, endDate));
+        }
+
+        return schedulingRepository.findAll(specification);
     }
+
 
     @Override
     public ReqResUpdateScheduling updateScheduling(ReqResUpdateScheduling reqResUpdateScheduling) {
@@ -297,8 +343,8 @@ public class AdminServiceImpl implements AdminService{
 
     @Override
     public List<TreatmentDTO> getAllTreatment() {
-        List<ServiceTreatmentSlip> entitas = serviceTreatmenSlipRepository.findAll();
-        return entitas.stream()
+        List<ServiceTreatmentSlip> serviceTreatmentSlips = serviceTreatmenSlipRepository.findAll();
+        return serviceTreatmentSlips.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
