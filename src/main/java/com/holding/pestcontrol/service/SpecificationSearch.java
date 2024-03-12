@@ -61,6 +61,19 @@ public class SpecificationSearch {
         };
     }
 
+//    public static Specification<Scheduling> findAllScheduleByClientAuthentication(String companyName,LocalDate startDate, LocalDate endDate){
+//        return (root, query, criteriaBuilder) -> {
+//
+//            String authentication = SecurityContextHolder.getContext().getAuthentication().getName();
+//
+//            Join<Scheduling, Client> workerJoin = root.join("client", JoinType.INNER);
+//            Join<Client, User> userJoin = workerJoin.join("user", JoinType.INNER);
+//
+//
+//        };
+//    }
+
+
 //    public static Specification<Scheduling> findAllScheduleByWorkerName(String workerName, String namaPerusahaan){
 //        return (root, query, criteriaBuilder) -> {
 //            Join<Scheduling, Worker> workerJoin = root.join("worker", JoinType.INNER);
