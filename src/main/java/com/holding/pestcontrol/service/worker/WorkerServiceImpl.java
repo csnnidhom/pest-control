@@ -76,23 +76,9 @@ public class WorkerServiceImpl implements WorkerService{
     }
 
     @Override
-    public List<Scheduling> getAllSchedule() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found"));
-
-        Worker worker = (Worker) workerRepository.findByUser(user)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id Detail Client Not Found"));
-
-//        return schedulingRepository.findAllByWorker(worker);
-
-        Specification<Scheduling> specification = SpecificationSearch.findAllScheduleByWorkerAuthentication();
-
+    public List<Scheduling> getAllScheduleWorker(String companyName, LocalDate startDate, LocalDate endDate) {
+        Specification<Scheduling> specification = SpecificationSearch.findAllScheduleByWorkerAuthentication(companyName, startDate, endDate);
         return schedulingRepository.findAll(specification);
-
-
     }
 
     @Override

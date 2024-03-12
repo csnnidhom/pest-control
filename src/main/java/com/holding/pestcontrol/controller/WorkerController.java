@@ -47,9 +47,13 @@ public class WorkerController {
         return workerService.updateDetailProfile(request);
     }
 
-    @GetMapping("/get-schedule")
-    public List<Scheduling> getSchedule(){
-        return workerService.getAllSchedule();
+    @GetMapping("/get-all-schedule-worker")
+    public List<Scheduling> getAllSchedule(
+            @RequestParam (required = false) String companyName,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
+    ){
+        return workerService.getAllScheduleWorker(companyName, startDate, endDate);
     }
 
     @PostMapping("/create-treatment")

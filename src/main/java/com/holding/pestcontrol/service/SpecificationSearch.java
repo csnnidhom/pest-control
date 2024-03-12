@@ -4,31 +4,20 @@ import com.holding.pestcontrol.entity.Client;
 import com.holding.pestcontrol.entity.Scheduling;
 import com.holding.pestcontrol.entity.User;
 import com.holding.pestcontrol.entity.Worker;
-import com.holding.pestcontrol.enumm.Role;
-import com.holding.pestcontrol.repository.UserRepository;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.jdbc.Work;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 public class SpecificationSearch {
 
 
-    public static Specification<Scheduling> findAllScheduleByWorkerAuthentication(){
+    public static Specification<Scheduling> findAllScheduleByWorkerAuthentication(String companyName,LocalDate startDate, LocalDate endDate){
         return (root, query, criteriaBuilder) -> {
 
             String authentication = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -36,8 +25,39 @@ public class SpecificationSearch {
             Join<Scheduling, Worker> workerJoin = root.join("worker", JoinType.INNER);
             Join<Worker, User> userJoin = workerJoin.join("user", JoinType.INNER);
 
-            return criteriaBuilder.equal(userJoin.get("email"), authentication);
+            if (companyName == null){
+                if (startDate == null || endDate == null) {
+                    LocalDate startDateNow = LocalDate.now();
+                    LocalDate endDateNow = LocalDate.now();
 
+                    return criteriaBuilder.and(
+                            criteriaBuilder.equal(userJoin.get("email"), authentication),
+                            criteriaBuilder.between(root.get("dateWorking"), startDateNow, endDateNow)
+                    );
+                }else {
+                    return criteriaBuilder.and(
+                            criteriaBuilder.equal(userJoin.get("email"), authentication),
+                            criteriaBuilder.between(root.get("dateWorking"), startDate, endDate)
+                    );
+                }
+
+            } else {
+                if (startDate == null || endDate == null) {
+                    LocalDate startDateNow = LocalDate.now();
+                    LocalDate endDateNow = LocalDate.now();
+
+                    return criteriaBuilder.and(
+                            criteriaBuilder.equal(userJoin.get("email"), authentication),
+                            criteriaBuilder.between(root.get("dateWorking"), startDateNow, endDateNow)
+                    );
+                }else {
+                    return criteriaBuilder.and(
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("client").get("namaPerusahaan")), "%" + companyName.toLowerCase() + "%"),
+                            criteriaBuilder.equal(userJoin.get("email"), authentication),
+                            criteriaBuilder.between(root.get("dateWorking"), startDate, endDate)
+                    );
+                }
+            }
         };
     }
 
@@ -49,14 +69,14 @@ public class SpecificationSearch {
 //        };
 //    }
 
-    public static Specification<Scheduling> companyNameSchedule(String companyName){
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.like(criteriaBuilder.lower(root.get("client").get("namaPerusahaan")), "%" + companyName.toLowerCase() + "%");
-    }
-
     public static Specification<Scheduling> dateWorking(LocalDate startDate, LocalDate endDate){
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.between(root.get("dateWorking"), startDate, endDate);
+    }
+
+    public static Specification<Scheduling> companyNameSchedule(String companyName){
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.like(criteriaBuilder.lower(root.get("client").get("namaPerusahaan")), "%" + companyName.toLowerCase() + "%");
     }
 
     public static Specification<Client> companyNameClient(String companyName){

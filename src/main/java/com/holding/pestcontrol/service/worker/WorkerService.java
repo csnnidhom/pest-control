@@ -10,7 +10,7 @@ public interface WorkerService {
     ReqResWorker getDetailProfile();
     ReqResWorker updateDetailProfile(ReqResWorker request);
 
-    List<Scheduling> getAllSchedule();
+    List<Scheduling> getAllScheduleWorker(String companyname, LocalDate startDate, LocalDate endDate);
 
     ReqResTreatment createTreatment(ReqResTreatment reqResTreatment);
 
