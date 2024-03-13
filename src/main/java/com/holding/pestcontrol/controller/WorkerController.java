@@ -3,6 +3,7 @@ package com.holding.pestcontrol.controller;
 import com.holding.pestcontrol.dto.ReqResTreatment;
 import com.holding.pestcontrol.dto.ReqResWorker;
 import com.holding.pestcontrol.entity.Scheduling;
+import com.holding.pestcontrol.entity.ServiceTreatmentSlip;
 import com.holding.pestcontrol.entity.User;
 import com.holding.pestcontrol.entity.Worker;
 import com.holding.pestcontrol.repository.SchedulingRepository;
@@ -59,6 +60,15 @@ public class WorkerController {
     @PostMapping("/create-treatment")
     public ReqResTreatment createTreatment(@RequestBody ReqResTreatment reqResTreatment){
         return workerService.createTreatment(reqResTreatment);
+    }
+
+    @GetMapping("/get-all-service-treatment-worker")
+    public List<ServiceTreatmentSlip> getAllTreatment(
+            @RequestParam (required = false) String companyName,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
+    ){
+        return workerService.getAllServiceTreatment(companyName, startDate, endDate);
     }
 
 }

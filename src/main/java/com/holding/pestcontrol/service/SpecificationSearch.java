@@ -1,9 +1,6 @@
 package com.holding.pestcontrol.service;
 
-import com.holding.pestcontrol.entity.Client;
-import com.holding.pestcontrol.entity.Scheduling;
-import com.holding.pestcontrol.entity.User;
-import com.holding.pestcontrol.entity.Worker;
+import com.holding.pestcontrol.entity.*;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
@@ -61,26 +58,49 @@ public class SpecificationSearch {
         };
     }
 
-//    public static Specification<Scheduling> findAllScheduleByClientAuthentication(String companyName,LocalDate startDate, LocalDate endDate){
-//        return (root, query, criteriaBuilder) -> {
-//
-//            String authentication = SecurityContextHolder.getContext().getAuthentication().getName();
-//
-//            Join<Scheduling, Client> workerJoin = root.join("client", JoinType.INNER);
-//            Join<Client, User> userJoin = workerJoin.join("user", JoinType.INNER);
-//
-//
-//        };
-//    }
+    public static Specification<ServiceTreatmentSlip> findAllServicetreatmentByWorkerAuthentication(String companyName,LocalDate startDate, LocalDate endDate){
+        return (root, query, criteriaBuilder) -> {
 
+            String authentication = SecurityContextHolder.getContext().getAuthentication().getName();
 
-//    public static Specification<Scheduling> findAllScheduleByWorkerName(String workerName, String namaPerusahaan){
-//        return (root, query, criteriaBuilder) -> {
-//            Join<Scheduling, Worker> workerJoin = root.join("worker", JoinType.INNER);
-//            Join<Scheduling, Client> clientJoin = root.join("client", JoinType.INNER);
-//            return criteriaBuilder.like(criteriaBuilder.lower(workerJoin.get("namaLengkap")), "%" + workerName.toLowerCase() + "%");
-//        };
-//    }
+            Join<ServiceTreatmentSlip, Scheduling> serviceTreatmentSlipSchedulingJoin = root.join("scheduling", JoinType.INNER);
+            Join<Scheduling, Worker> workerJoin = serviceTreatmentSlipSchedulingJoin.join("worker", JoinType.INNER);
+            Join<Worker, User> userJoin = workerJoin.join("user", JoinType.INNER);
+
+            if (companyName == null){
+                if (startDate == null || endDate == null) {
+                    LocalDate startDateNow = LocalDate.now();
+                    LocalDate endDateNow = LocalDate.now();
+
+                    return criteriaBuilder.and(
+                            criteriaBuilder.equal(userJoin.get("email"), authentication),
+                            criteriaBuilder.between(root.get("dateWorking"), startDateNow, endDateNow)
+                    );
+                }else {
+                    return criteriaBuilder.and(
+                            criteriaBuilder.equal(userJoin.get("email"), authentication),
+                            criteriaBuilder.between(root.get("dateWorking"), startDate, endDate)
+                    );
+                }
+            } else {
+                if (startDate == null || endDate == null) {
+                    LocalDate startDateNow = LocalDate.now();
+                    LocalDate endDateNow = LocalDate.now();
+                    log.info("company name : " + companyName );
+                    return criteriaBuilder.and(
+                            criteriaBuilder.equal(userJoin.get("email"), authentication),
+                            criteriaBuilder.between(root.get("dateWorking"), startDateNow, endDateNow)
+                    );
+                }else {
+                    return criteriaBuilder.and(
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("scheduling").get("client").get("namaPerusahaan")), "%" + companyName.toLowerCase() + "%"),
+                            criteriaBuilder.equal(userJoin.get("email"), authentication),
+                            criteriaBuilder.between(root.get("dateWorking"), startDate, endDate)
+                    );
+                }
+            }
+        };
+    }
 
     public static Specification<Scheduling> dateWorking(LocalDate startDate, LocalDate endDate){
         return (root, query, criteriaBuilder) ->

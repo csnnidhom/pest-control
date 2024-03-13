@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,7 +25,7 @@ public class ServiceTreatmentSlip {
     @Id
     private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_scheduling", referencedColumnName = "id")
     private Scheduling scheduling;
 
@@ -41,7 +43,8 @@ public class ServiceTreatmentSlip {
     @JoinColumn(name = "id_chemical", referencedColumnName = "id")
     private Chemical chemical;
 
-    private LocalDate date;
+    @Column(name = "date_working")
+    private LocalDate dateWorking;
 
     @Column(name = "time_in")
     private LocalTime timeIn;

@@ -41,7 +41,7 @@ public class WorkerServiceImpl implements WorkerService{
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
 
         Worker worker = (Worker) workerRepository.findByUser(user)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Detail Client Not Found "));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Detail Worker Not Found "));
 
         return ReqResWorker.builder()
                 .detailWorker(worker)
@@ -85,12 +85,10 @@ public class WorkerServiceImpl implements WorkerService{
     public ReqResTreatment createTreatment(ReqResTreatment reqResTreatment) {
         validationService.validate(reqResTreatment);
 
-        ReqResTreatment response = new ReqResTreatment();
-
         Scheduling scheduling = schedulingRepository.findById(reqResTreatment.getIdSchedule())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id schedule not found"));
 
-        try{
+        if (!serviceTreatmenSlipRepository.existsByScheduling(scheduling) ){
             ServiceTreatmentSlip serviceTreatmentSlip = new ServiceTreatmentSlip();
             serviceTreatmentSlip.setId(UUID.randomUUID().toString());
             serviceTreatmentSlip.setScheduling(scheduling);
@@ -124,20 +122,26 @@ public class WorkerServiceImpl implements WorkerService{
             //end ChemicalType
 
             serviceTreatmentSlip.setChemical(chemical);
-            serviceTreatmentSlip.setDate(reqResTreatment.getDate());
+            serviceTreatmentSlip.setDateWorking(reqResTreatment.getDate());
             serviceTreatmentSlip.setTimeIn(reqResTreatment.getTimeIn());
             serviceTreatmentSlip.setTimeOut(reqResTreatment.getTimeOut());
             serviceTreatmentSlip.setRekomendasiWorker(reqResTreatment.getRekomendasiWorker());
             serviceTreatmentSlip.setSaranClient(reqResTreatment.getSaranClient());
             serviceTreatmenSlipRepository.save(serviceTreatmentSlip);
 
-            response.setMessage("Success add treatment");
-            response.setIdTreatment(serviceTreatmentSlip.getId());
-        }catch (Exception e){
-            response.setMessage("Failed add treatment -> " + e.getMessage());
+            return ReqResTreatment.builder()
+                    .message("Success add treatment")
+                    .idTreatment(serviceTreatmentSlip.getId())
+                    .build();
+        }else {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Data duplicate");
         }
+    }
 
-        return response;
+    @Override
+    public List<ServiceTreatmentSlip> getAllServiceTreatment(String companyname, LocalDate startDate, LocalDate endDate) {
+        Specification<ServiceTreatmentSlip> specification = SpecificationSearch.findAllServicetreatmentByWorkerAuthentication(companyname, startDate, endDate);
+        return serviceTreatmenSlipRepository.findAll(specification);
     }
 
 }

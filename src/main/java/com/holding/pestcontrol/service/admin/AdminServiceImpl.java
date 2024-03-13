@@ -358,7 +358,7 @@ public class AdminServiceImpl implements AdminService{
         dto.setAi(String.valueOf(serviceTreatmentSlip.isAi()));
         dto.setRekarks(serviceTreatmentSlip.getRekarks());
         dto.setChemicalDTO(convertChemicalToDTO(Collections.singletonList(serviceTreatmentSlip.getChemical())));
-        dto.setDate(serviceTreatmentSlip.getDate());
+        dto.setDate(serviceTreatmentSlip.getDateWorking());
         dto.setTimeIn(serviceTreatmentSlip.getTimeIn());
         dto.setTimeOut(serviceTreatmentSlip.getTimeOut());
         dto.setRekomendasiWorker(serviceTreatmentSlip.getRekomendasiWorker());

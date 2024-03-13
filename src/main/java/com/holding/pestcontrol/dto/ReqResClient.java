@@ -20,12 +20,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ReqResClient {
 
-    private int statusCode;
-
     private String message;
 
     private String id;
 
+    @NotBlank
     private String namaPerusahaan;
 
     private String alamat;

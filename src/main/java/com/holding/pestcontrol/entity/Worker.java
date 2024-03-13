@@ -35,7 +35,7 @@ public class Worker {
     @Column(name = "no_telp")
     private String noTelp;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "username", referencedColumnName = "email")
     private User user;
 

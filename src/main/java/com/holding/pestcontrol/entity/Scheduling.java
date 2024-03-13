@@ -23,7 +23,7 @@ public class Scheduling {
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "custumer", referencedColumnName = "nama_perusahaan")
+    @JoinColumn(name = "client", referencedColumnName = "nama_perusahaan")
     private Client client;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,4 +51,5 @@ public class Scheduling {
     private String noTelpPic;
 
     private LocalDate dateWorking;
+
 }

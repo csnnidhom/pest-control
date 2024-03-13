@@ -15,4 +15,5 @@ import java.util.List;
 public interface SchedulingRepository extends JpaRepository<Scheduling, String>, JpaSpecificationExecutor<Scheduling> {
 
     List<Scheduling> findAllByClientAndDateWorkingBetween(Client client,LocalDate startDate, LocalDate endDate);
+
 }
