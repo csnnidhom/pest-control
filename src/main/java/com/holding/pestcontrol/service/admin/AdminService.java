@@ -1,12 +1,15 @@
 package com.holding.pestcontrol.service.admin;
 
-import com.holding.pestcontrol.dto.*;
-import com.holding.pestcontrol.entity.Client;
-import com.holding.pestcontrol.entity.Scheduling;
-import com.holding.pestcontrol.entity.Worker;
+import com.holding.pestcontrol.dto.entityDTO.TreatmentDTO;
+import com.holding.pestcontrol.dto.profileUser.ReqResAdminCreateDetailUser;
+import com.holding.pestcontrol.dto.profileUser.ReqResAdminGetDelete;
+import com.holding.pestcontrol.dto.profileUser.ReqResAdminUpdateDetailUser;
+import com.holding.pestcontrol.dto.schedule.ReqResCreateScheduling;
+import com.holding.pestcontrol.dto.schedule.ReqResDeleteScheduling;
+import com.holding.pestcontrol.dto.schedule.ReqResUpdateScheduling;
+import com.holding.pestcontrol.entity.*;
 import com.holding.pestcontrol.enumm.FreqType;
 import com.holding.pestcontrol.enumm.Role;
-import com.holding.pestcontrol.entity.User;
 import com.holding.pestcontrol.enumm.WorkingType;
 
 import java.time.LocalDate;
@@ -39,6 +42,6 @@ public interface AdminService {
 
     ReqResDeleteScheduling deleteSchduling(ReqResDeleteScheduling reqResDeleteScheduling);
 
-    List<TreatmentDTO> getAllTreatment();
+    List<TreatmentDTO> getAllTreatment(String companyName, LocalDate startDate, LocalDate endDate);
 
 }

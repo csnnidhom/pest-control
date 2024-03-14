@@ -1,9 +1,10 @@
 package com.holding.pestcontrol.service.worker;
 
-import com.holding.pestcontrol.dto.ReqResTreatment;
-import com.holding.pestcontrol.dto.ReqResWorker;
+import com.holding.pestcontrol.dto.entityDTO.TreatmentDTO;
+import com.holding.pestcontrol.dto.profileUser.ReqResWorker;
+import com.holding.pestcontrol.dto.treatment.ReqResTreatmentCreate;
+import com.holding.pestcontrol.dto.treatment.ReqResTreatmentUpdate;
 import com.holding.pestcontrol.entity.Scheduling;
-import com.holding.pestcontrol.entity.ServiceTreatmentSlip;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,8 +15,12 @@ public interface WorkerService {
 
     List<Scheduling> getAllScheduleWorker(String companyname, LocalDate startDate, LocalDate endDate);
 
-    ReqResTreatment createTreatment(ReqResTreatment reqResTreatment);
+    ReqResTreatmentCreate createTreatment(ReqResTreatmentCreate reqResTreatmentCreate);
 
-    List<ServiceTreatmentSlip> getAllServiceTreatment(String companyname, LocalDate startDate, LocalDate endDate);
+    List<TreatmentDTO> getAllServiceTreatment(String companyname, LocalDate startDate, LocalDate endDate);
+
+    ReqResTreatmentUpdate updateTreatment(ReqResTreatmentUpdate reqResTreatmentUpdate);
+
+    Re
 
 }

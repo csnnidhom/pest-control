@@ -1,7 +1,9 @@
-package com.holding.pestcontrol.dto;
+package com.holding.pestcontrol.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,21 +15,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RequestTreatmentType {
+public class RequestGenerateOtp {
 
-    private String id;
-    
-    private boolean cf;
+    private String success;
 
-    private boolean hf;
-
-    private boolean s;
-
-    private boolean b;
-
-    private boolean lv;
-
-    private boolean t;
-
-    private boolean ot;
+    @NotBlank
+    private String email;
 }

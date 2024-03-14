@@ -1,12 +1,15 @@
 package com.holding.pestcontrol.controller;
 
-import com.holding.pestcontrol.dto.*;
-import com.holding.pestcontrol.entity.Client;
-import com.holding.pestcontrol.entity.Scheduling;
-import com.holding.pestcontrol.entity.Worker;
+import com.holding.pestcontrol.dto.entityDTO.TreatmentDTO;
+import com.holding.pestcontrol.dto.profileUser.ReqResAdminCreateDetailUser;
+import com.holding.pestcontrol.dto.profileUser.ReqResAdminGetDelete;
+import com.holding.pestcontrol.dto.profileUser.ReqResAdminUpdateDetailUser;
+import com.holding.pestcontrol.dto.schedule.ReqResCreateScheduling;
+import com.holding.pestcontrol.dto.schedule.ReqResDeleteScheduling;
+import com.holding.pestcontrol.dto.schedule.ReqResUpdateScheduling;
+import com.holding.pestcontrol.entity.*;
 import com.holding.pestcontrol.enumm.FreqType;
 import com.holding.pestcontrol.enumm.Role;
-import com.holding.pestcontrol.entity.User;
 import com.holding.pestcontrol.enumm.WorkingType;
 import com.holding.pestcontrol.service.admin.AdminServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -103,7 +106,11 @@ public class AdminController {
     }
 
     @GetMapping("/get-all-treatment")
-    public List<TreatmentDTO> getAllTreatment(){
-        return adminServiceImpl.getAllTreatment();
+    public List<TreatmentDTO> getAllTreatment(
+            @RequestParam(required = false) String companyName,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
+    ){
+        return adminServiceImpl.getAllTreatment(companyName, startDate, endDate);
     }
 }

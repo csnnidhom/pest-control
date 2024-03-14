@@ -1,6 +1,7 @@
 package com.holding.pestcontrol.controller;
 
 import com.holding.pestcontrol.dto.*;
+import com.holding.pestcontrol.dto.auth.*;
 import com.holding.pestcontrol.service.AuthService;
 import com.holding.pestcontrol.service.JWTUtils;
 import lombok.RequiredArgsConstructor;

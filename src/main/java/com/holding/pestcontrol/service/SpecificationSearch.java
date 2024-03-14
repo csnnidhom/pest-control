@@ -44,12 +44,13 @@ public class SpecificationSearch {
                     LocalDate endDateNow = LocalDate.now();
 
                     return criteriaBuilder.and(
+                            criteriaBuilder.like(root.get("client").get("namaPerusahaan"), "%" + companyName.toLowerCase() + "%"),
                             criteriaBuilder.equal(userJoin.get("email"), authentication),
                             criteriaBuilder.between(root.get("dateWorking"), startDateNow, endDateNow)
                     );
                 }else {
                     return criteriaBuilder.and(
-                            criteriaBuilder.like(criteriaBuilder.lower(root.get("client").get("namaPerusahaan")), "%" + companyName.toLowerCase() + "%"),
+                            criteriaBuilder.like(root.get("client").get("namaPerusahaan"), "%" + companyName.toLowerCase() + "%"),
                             criteriaBuilder.equal(userJoin.get("email"), authentication),
                             criteriaBuilder.between(root.get("dateWorking"), startDate, endDate)
                     );
@@ -68,6 +69,7 @@ public class SpecificationSearch {
             Join<Worker, User> userJoin = workerJoin.join("user", JoinType.INNER);
 
             if (companyName == null){
+
                 if (startDate == null || endDate == null) {
                     LocalDate startDateNow = LocalDate.now();
                     LocalDate endDateNow = LocalDate.now();
@@ -86,14 +88,15 @@ public class SpecificationSearch {
                 if (startDate == null || endDate == null) {
                     LocalDate startDateNow = LocalDate.now();
                     LocalDate endDateNow = LocalDate.now();
-                    log.info("company name : " + companyName );
+
                     return criteriaBuilder.and(
+                            criteriaBuilder.like(root.get("client").get("namaPerusahaan"), "%" + companyName.toLowerCase() + "%"),
                             criteriaBuilder.equal(userJoin.get("email"), authentication),
                             criteriaBuilder.between(root.get("dateWorking"), startDateNow, endDateNow)
                     );
                 }else {
                     return criteriaBuilder.and(
-                            criteriaBuilder.like(criteriaBuilder.lower(root.get("scheduling").get("client").get("namaPerusahaan")), "%" + companyName.toLowerCase() + "%"),
+                            criteriaBuilder.like(root.get("scheduling").get("client").get("namaPerusahaan"), "%" + companyName.toLowerCase() + "%"),
                             criteriaBuilder.equal(userJoin.get("email"), authentication),
                             criteriaBuilder.between(root.get("dateWorking"), startDate, endDate)
                     );
@@ -102,7 +105,12 @@ public class SpecificationSearch {
         };
     }
 
-    public static Specification<Scheduling> dateWorking(LocalDate startDate, LocalDate endDate){
+    public static Specification<Scheduling> dateWorkingScheduling(LocalDate startDate, LocalDate endDate){
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.between(root.get("dateWorking"), startDate, endDate);
+    }
+
+    public static Specification<ServiceTreatmentSlip> dateWorkingTreatment(LocalDate startDate, LocalDate endDate){
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.between(root.get("dateWorking"), startDate, endDate);
     }
@@ -110,6 +118,11 @@ public class SpecificationSearch {
     public static Specification<Scheduling> companyNameSchedule(String companyName){
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.like(criteriaBuilder.lower(root.get("client").get("namaPerusahaan")), "%" + companyName.toLowerCase() + "%");
+    }
+
+    public static Specification<ServiceTreatmentSlip> companyNameTreatment(String companyName){
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.like(criteriaBuilder.lower(root.get("scheduling").get("client").get("namaPerusahaan")), "%" + companyName.toLowerCase() + "%");
     }
 
     public static Specification<Client> companyNameClient(String companyName){

@@ -1,6 +1,6 @@
 package com.holding.pestcontrol.service;
 
-import com.holding.pestcontrol.dto.*;
+import com.holding.pestcontrol.dto.auth.*;
 import com.holding.pestcontrol.enumm.Role;
 import com.holding.pestcontrol.entity.User;
 import com.holding.pestcontrol.repository.UserRepository;

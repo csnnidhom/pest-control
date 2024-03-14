@@ -1,6 +1,13 @@
 package com.holding.pestcontrol.service.admin;
 
-import com.holding.pestcontrol.dto.*;
+import com.holding.pestcontrol.dto.entityDTO.*;
+import com.holding.pestcontrol.dto.profileUser.ReqResAdminCreateDetailUser;
+import com.holding.pestcontrol.dto.profileUser.ReqResAdminGetDelete;
+import com.holding.pestcontrol.dto.profileUser.ReqResAdminUpdateDetailUser;
+import com.holding.pestcontrol.dto.schedule.ReqResCreateScheduling;
+import com.holding.pestcontrol.dto.schedule.ReqResDeleteScheduling;
+import com.holding.pestcontrol.dto.schedule.ReqResSchedulingData;
+import com.holding.pestcontrol.dto.schedule.ReqResUpdateScheduling;
 import com.holding.pestcontrol.entity.*;
 import com.holding.pestcontrol.enumm.FreqType;
 import com.holding.pestcontrol.enumm.Role;
@@ -60,6 +67,9 @@ public class AdminServiceImpl implements AdminService{
         String role = user.getRole().name();
 
         if (role.equals("CLIENT")){
+            if (reqResAdminCreateDetailUser.getNamaPerusahaan() == null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nama perusahaan is null");
+            }
             Client client = new Client();
             client.setId(UUID.randomUUID().toString());
             client.setUser(user);
@@ -71,6 +81,9 @@ public class AdminServiceImpl implements AdminService{
             response.setId(client.getId());
 
         } else if (role.equals("WORKER")) {
+            if (reqResAdminCreateDetailUser.getNamaLengkap() == null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nama Lengkap is null");
+            }
             Worker worker = new Worker();
             worker.setId(UUID.randomUUID().toString());
             worker.setUser(user);
@@ -270,7 +283,7 @@ public class AdminServiceImpl implements AdminService{
         }
 
         if (startDate != null && endDate != null){
-            specification = specification.and(SpecificationSearch.dateWorking(startDate, endDate));
+            specification = specification.and(SpecificationSearch.dateWorkingScheduling(startDate, endDate));
         }
 
         return schedulingRepository.findAll(specification);
@@ -342,8 +355,19 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
-    public List<TreatmentDTO> getAllTreatment() {
-        List<ServiceTreatmentSlip> serviceTreatmentSlips = serviceTreatmenSlipRepository.findAll();
+    public List<TreatmentDTO> getAllTreatment(String companyName, LocalDate startDate, LocalDate endDate) {
+
+        Specification<ServiceTreatmentSlip> specification = Specification.where(null);
+
+        if (companyName != null && !companyName.isEmpty()){
+            specification = specification.and(SpecificationSearch.companyNameTreatment(companyName));
+        }
+
+        if (startDate != null && endDate != null){
+            specification = specification.and(SpecificationSearch.dateWorkingTreatment(startDate, endDate));
+        }
+
+        List<ServiceTreatmentSlip> serviceTreatmentSlips = serviceTreatmenSlipRepository.findAll(specification);
         return serviceTreatmentSlips.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());

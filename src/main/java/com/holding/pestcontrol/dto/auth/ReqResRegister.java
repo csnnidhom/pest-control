@@ -1,4 +1,4 @@
-package com.holding.pestcontrol.dto;
+package com.holding.pestcontrol.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -6,7 +6,10 @@ import com.holding.pestcontrol.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
@@ -14,19 +17,11 @@ import lombok.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
-public class ReqResUser {
-
-    private int statusCode;
-
-    private String error;
+public class ReqResRegister {
 
     private String message;
 
-    private String token;
-
-    private String refreshToken;
-
-    private String expirationTime;
+    private int statusCode;
 
     @NotBlank
     @Size(max = 50)
@@ -42,5 +37,4 @@ public class ReqResUser {
     private String role;
 
     private User user;
-
 }

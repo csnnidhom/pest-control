@@ -23,7 +23,7 @@ public class Scheduling {
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client", referencedColumnName = "nama_perusahaan")
+    @JoinColumn(name = "customer", referencedColumnName = "nama_perusahaan")
     private Client client;
 
     @ManyToOne(fetch = FetchType.LAZY)

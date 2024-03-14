@@ -1,7 +1,9 @@
-package com.holding.pestcontrol.dto;
+package com.holding.pestcontrol.dto.entityDTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.holding.pestcontrol.enumm.FreqType;
+import com.holding.pestcontrol.enumm.WorkingType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,30 +11,31 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ReqResSchedulingData {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class SchedulingDTO {
 
-    private String id;
+    private String idSchedule;
 
-    private String companyName;
+    private List<ClientDTO> client;
 
-    private String workerName;
+    private List<WorkerDTO> worker;
 
     private LocalDate startContractPeriod;
 
     private LocalDate endContractPeriod;
 
-    private String workingType;
+    private WorkingType workingType;
 
-    private int freq;
+    private Integer freq;
 
-    private String freqType;
+    private FreqType freqType;
 
     private LocalTime timeStart;
 

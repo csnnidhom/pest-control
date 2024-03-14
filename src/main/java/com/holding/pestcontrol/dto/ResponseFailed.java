@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ResponseFailed {
 
-    private String errors;
+    private String error;
 
 }

@@ -1,17 +1,10 @@
 package com.holding.pestcontrol.controller;
 
-import com.holding.pestcontrol.dto.ReqResClient;
-import com.holding.pestcontrol.dto.ReqResEditPassword;
-import com.holding.pestcontrol.dto.ResponseSucces;
-import com.holding.pestcontrol.entity.Client;
+import com.holding.pestcontrol.dto.profileUser.ReqResClient;
 import com.holding.pestcontrol.entity.Scheduling;
-import com.holding.pestcontrol.entity.User;
-import com.holding.pestcontrol.repository.ClientRepository;
-import com.holding.pestcontrol.repository.UserRepository;
 import com.holding.pestcontrol.service.client.ClientServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;

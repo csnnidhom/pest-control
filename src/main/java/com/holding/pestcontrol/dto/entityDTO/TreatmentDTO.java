@@ -1,4 +1,4 @@
-package com.holding.pestcontrol.dto;
+package com.holding.pestcontrol.dto.entityDTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

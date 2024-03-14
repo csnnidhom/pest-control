@@ -1,8 +1,8 @@
-package com.holding.pestcontrol.dto;
+package com.holding.pestcontrol.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,19 +11,16 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RequestChemical {
+@Builder
+public class ReqResEditPassword {
 
-    private String id;
+    private String message;
 
-    private String bahanAktif;
+    @NotBlank
+    private String oldPassword;
 
-    private String dosis;
-
-    private String jumlah;
-
-    private String keterangan;
-
+    @NotBlank
+    private String newPassword;
 }

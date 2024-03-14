@@ -1,24 +1,18 @@
 package com.holding.pestcontrol.service.client;
 
-import com.holding.pestcontrol.dto.ReqResClient;
-import com.holding.pestcontrol.dto.ReqResEditPassword;
+import com.holding.pestcontrol.dto.profileUser.ReqResClient;
 import com.holding.pestcontrol.entity.Client;
 import com.holding.pestcontrol.entity.Scheduling;
 import com.holding.pestcontrol.entity.User;
 import com.holding.pestcontrol.repository.ClientRepository;
 import com.holding.pestcontrol.repository.SchedulingRepository;
 import com.holding.pestcontrol.repository.UserRepository;
-import com.holding.pestcontrol.service.SpecificationSearch;
 import com.holding.pestcontrol.service.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cglib.core.Local;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;

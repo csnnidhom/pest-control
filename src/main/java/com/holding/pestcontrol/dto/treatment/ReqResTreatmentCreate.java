@@ -1,12 +1,10 @@
-package com.holding.pestcontrol.dto;
+package com.holding.pestcontrol.dto.treatment;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.holding.pestcontrol.entity.Scheduling;
-import com.holding.pestcontrol.entity.TreatmentType;
+import com.holding.pestcontrol.dto.entityDTO.ChemicalDTO;
+import com.holding.pestcontrol.dto.entityDTO.TreatmentTypeDTO;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +12,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -22,25 +19,24 @@ import java.util.List;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ReqResTreatment {
+public class ReqResTreatmentCreate {
 
     private String message;
 
     private String idTreatment;
 
+    @NotBlank
     private String idSchedule;
-
-    private Scheduling scheduling;
 
     private String area;
 
-    private TreatmentType requestTreatmentType;
+    private TreatmentTypeDTO treatmentTypeDTO;
 
     private String ai;
 
     private String rekarks;
 
-    private RequestChemical requestChemicalchemical;
+    private ChemicalDTO chemicalDTO;
 
     private LocalDate date;
 

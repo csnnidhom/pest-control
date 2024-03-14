@@ -1,44 +1,41 @@
-package com.holding.pestcontrol.dto;
+package com.holding.pestcontrol.dto.schedule;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.holding.pestcontrol.entity.Client;
-import com.holding.pestcontrol.entity.Worker;
-import com.holding.pestcontrol.enumm.FreqType;
-import com.holding.pestcontrol.enumm.WorkingType;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SchedulingDTO {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ReqResSchedulingData {
 
-    private String idSchedule;
+    private String id;
 
-    private List<ClientDTO> client;
+    private String companyName;
 
-    private List<WorkerDTO> worker;
+    private String workerName;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startContractPeriod;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endContractPeriod;
 
-    private WorkingType workingType;
+    private String workingType;
 
     private int freq;
 
-    private FreqType freqType;
+    private String freqType;
 
     private LocalTime timeStart;
 

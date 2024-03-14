@@ -1,4 +1,4 @@
-package com.holding.pestcontrol.dto;
+package com.holding.pestcontrol.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

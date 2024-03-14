@@ -9,6 +9,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,19 +23,19 @@ public class ErrorController {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ResponseFailed> constrainViolation(ConstraintViolationException exception){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ResponseFailed.builder().errors(exception.getMessage()).build());
+                .body(ResponseFailed.builder().error(exception.getMessage()).build());
     }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ResponseFailed> apiException(ResponseStatusException exception){
         return ResponseEntity.status(exception.getStatusCode())
-                .body(ResponseFailed.builder().errors(exception.getReason()).build());
+                .body(ResponseFailed.builder().error(exception.getReason()).build());
     }
 
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<ResponseFailed> primaryException(SQLIntegrityConstraintViolationException exception){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ResponseFailed.builder().errors(exception.getMessage()).build());
+                .body(ResponseFailed.builder().error(exception.getMessage()).build());
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
@@ -47,6 +48,12 @@ public class ErrorController {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<String> handleMalformedJwtException(MalformedJwtException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Malformed JWT Token");
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ResponseFailed> handleMissingServletRequestParameterException(MissingServletRequestParameterException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ResponseFailed.builder().error(exception.getMessage()).build());
     }
 
 }

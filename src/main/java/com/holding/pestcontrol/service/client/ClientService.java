@@ -1,10 +1,7 @@
 package com.holding.pestcontrol.service.client;
 
-import com.holding.pestcontrol.dto.ReqResClient;
-import com.holding.pestcontrol.dto.ReqResEditPassword;
-import com.holding.pestcontrol.entity.Client;
+import com.holding.pestcontrol.dto.profileUser.ReqResClient;
 import com.holding.pestcontrol.entity.Scheduling;
-import com.holding.pestcontrol.entity.User;
 
 import java.time.LocalDate;
 import java.util.List;
