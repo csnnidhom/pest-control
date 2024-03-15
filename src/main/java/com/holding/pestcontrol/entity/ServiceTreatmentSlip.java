@@ -25,7 +25,7 @@ public class ServiceTreatmentSlip {
     @Id
     private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_scheduling", referencedColumnName = "id")
     private Scheduling scheduling;
 
@@ -57,5 +57,7 @@ public class ServiceTreatmentSlip {
 
     @Column(name = "saran_client")
     private String saranClient;
+
+    private boolean status;
 
 }

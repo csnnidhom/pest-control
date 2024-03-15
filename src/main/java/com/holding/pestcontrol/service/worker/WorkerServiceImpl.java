@@ -3,6 +3,7 @@ package com.holding.pestcontrol.service.worker;
 import com.holding.pestcontrol.dto.entityDTO.*;
 import com.holding.pestcontrol.dto.profileUser.ReqResWorker;
 import com.holding.pestcontrol.dto.treatment.ReqResTreatmentCreate;
+import com.holding.pestcontrol.dto.treatment.ReqResTreatmentDelete;
 import com.holding.pestcontrol.dto.treatment.ReqResTreatmentUpdate;
 import com.holding.pestcontrol.entity.*;
 import com.holding.pestcontrol.repository.*;
@@ -196,6 +197,20 @@ public class WorkerServiceImpl implements WorkerService{
         return ReqResTreatmentUpdate.builder()
                 .message("Success update treatment")
                 .idTreatment(serviceTreatmentSlip.getId())
+                .build();
+    }
+
+    @Override
+    public ReqResTreatmentDelete deleteTreatment(ReqResTreatmentDelete reqResTreatmentDelete) {
+        validationService.validate(reqResTreatmentDelete);
+
+        ServiceTreatmentSlip serviceTreatmentSlip = serviceTreatmenSlipRepository.findById(reqResTreatmentDelete.getIdTreatment())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id Treatment not found"));
+
+        serviceTreatmenSlipRepository.delete(serviceTreatmentSlip);
+
+        return ReqResTreatmentDelete.builder()
+                .message("Success delete treatment")
                 .build();
     }
 

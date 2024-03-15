@@ -1,4 +1,4 @@
-package com.holding.pestcontrol.dto;
+package com.holding.pestcontrol.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

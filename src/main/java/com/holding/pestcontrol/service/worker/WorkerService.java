@@ -3,6 +3,7 @@ package com.holding.pestcontrol.service.worker;
 import com.holding.pestcontrol.dto.entityDTO.TreatmentDTO;
 import com.holding.pestcontrol.dto.profileUser.ReqResWorker;
 import com.holding.pestcontrol.dto.treatment.ReqResTreatmentCreate;
+import com.holding.pestcontrol.dto.treatment.ReqResTreatmentDelete;
 import com.holding.pestcontrol.dto.treatment.ReqResTreatmentUpdate;
 import com.holding.pestcontrol.entity.Scheduling;
 
@@ -21,6 +22,6 @@ public interface WorkerService {
 
     ReqResTreatmentUpdate updateTreatment(ReqResTreatmentUpdate reqResTreatmentUpdate);
 
-    Re
+    ReqResTreatmentDelete deleteTreatment(ReqResTreatmentDelete reqResTreatmentDelete);
 
 }

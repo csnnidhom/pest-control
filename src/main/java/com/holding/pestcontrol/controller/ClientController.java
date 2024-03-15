@@ -1,6 +1,10 @@
 package com.holding.pestcontrol.controller;
 
+import com.holding.pestcontrol.dto.entityDTO.TreatmentDTO;
 import com.holding.pestcontrol.dto.profileUser.ReqResClient;
+import com.holding.pestcontrol.dto.response.ResponseSucces;
+import com.holding.pestcontrol.dto.treatment.ReqResChangeStatusTreatment;
+import com.holding.pestcontrol.dto.treatment.ReqResSuggestionTreatment;
 import com.holding.pestcontrol.entity.Scheduling;
 import com.holding.pestcontrol.service.client.ClientServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -35,4 +39,21 @@ public class ClientController {
         return clientServiceImpl.getAllScheduleClient(startDate, endDate);
     }
 
+    @GetMapping("/get-all-service-treatment-client")
+    public List<TreatmentDTO> getAllTreatment(
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
+    ){
+        return clientServiceImpl.getAllServiceTreatment(startDate, endDate);
+    }
+
+    @PatchMapping("/change-status-complete")
+    public ReqResChangeStatusTreatment changeStatus(@RequestBody ReqResChangeStatusTreatment reqResChangeStatusTreatment){
+        return clientServiceImpl.changeStatusTreatment(reqResChangeStatusTreatment);
+    }
+
+    @PatchMapping("/create-suggestion")
+    public ReqResSuggestionTreatment createSuggestion(@RequestBody ReqResSuggestionTreatment reqResSuggestionTreatment){
+        return clientServiceImpl.createSuggestion(reqResSuggestionTreatment);
+    }
 }

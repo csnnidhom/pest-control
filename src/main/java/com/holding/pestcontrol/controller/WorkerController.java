@@ -1,6 +1,7 @@
 package com.holding.pestcontrol.controller;
 
 import com.holding.pestcontrol.dto.treatment.ReqResTreatmentCreate;
+import com.holding.pestcontrol.dto.treatment.ReqResTreatmentDelete;
 import com.holding.pestcontrol.dto.treatment.ReqResTreatmentUpdate;
 import com.holding.pestcontrol.dto.profileUser.ReqResWorker;
 import com.holding.pestcontrol.dto.entityDTO.TreatmentDTO;
@@ -54,11 +55,6 @@ public class WorkerController {
         return workerService.createTreatment(reqResTreatmentCreate);
     }
 
-    @PutMapping("/update-treatment")
-    public ReqResTreatmentUpdate updateTreatment(@RequestBody ReqResTreatmentUpdate reqResTreatmentUpdate){
-        return workerService.updateTreatment(reqResTreatmentUpdate);
-    }
-
     @GetMapping("/get-all-service-treatment-worker")
     public List<TreatmentDTO> getAllTreatment(
             @RequestParam (required = false) String companyName,
@@ -66,6 +62,16 @@ public class WorkerController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
     ){
         return workerService.getAllServiceTreatment(companyName, startDate, endDate);
+    }
+
+    @PutMapping("/update-treatment")
+    public ReqResTreatmentUpdate updateTreatment(@RequestBody ReqResTreatmentUpdate reqResTreatmentUpdate){
+        return workerService.updateTreatment(reqResTreatmentUpdate);
+    }
+
+    @DeleteMapping("/delete-treatment")
+    public ReqResTreatmentDelete deleteTreatment(@RequestBody ReqResTreatmentDelete reqResTreatmentDelete){
+        return workerService.deleteTreatment(reqResTreatmentDelete);
     }
 
 }

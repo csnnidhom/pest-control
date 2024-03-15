@@ -105,6 +105,33 @@ public class SpecificationSearch {
         };
     }
 
+    public static Specification<ServiceTreatmentSlip> findAllServicetreatmentByClientAuthentication(LocalDate startDate, LocalDate endDate){
+        return (root, query, criteriaBuilder) -> {
+
+            String authentication = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            Join<ServiceTreatmentSlip, Scheduling> serviceTreatmentSlipSchedulingJoin = root.join("scheduling", JoinType.INNER);
+            Join<Scheduling, Client> clientJoin = serviceTreatmentSlipSchedulingJoin.join("client", JoinType.INNER);
+            Join<Client, User> userJoin = clientJoin.join("user", JoinType.INNER);
+
+            if (startDate == null || endDate == null) {
+                LocalDate startDateNow = LocalDate.now();
+                LocalDate endDateNow = LocalDate.now();
+
+                return criteriaBuilder.and(
+                        criteriaBuilder.equal(userJoin.get("email"), authentication),
+                        criteriaBuilder.between(root.get("dateWorking"), startDateNow, endDateNow)
+                );
+            }else {
+                return criteriaBuilder.and(
+                        criteriaBuilder.equal(userJoin.get("email"), authentication),
+                        criteriaBuilder.between(root.get("dateWorking"), startDate, endDate)
+                );
+            }
+
+        };
+    }
+
     public static Specification<Scheduling> dateWorkingScheduling(LocalDate startDate, LocalDate endDate){
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.between(root.get("dateWorking"), startDate, endDate);
