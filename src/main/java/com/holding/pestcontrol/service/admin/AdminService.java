@@ -30,9 +30,9 @@ public interface AdminService {
     List<Client> searchClient(String companyName, String companyAddress, String companyEmail);
 
     List<Worker> searchWorker(String workerFullname, String wokerAddress, String workerEmail);
-    ReqResAdminGetDelete getDetailByEmail(ReqResAdminGetDelete reqResAdminGetDelete);
+    ReqResAdminGetDelete getDetailByEmail(String email);
 
-    ReqResAdminGetDelete switchStatus(ReqResAdminGetDelete reqResAdminGetDelete);
+    String switchStatus(String email);
 
     ReqResCreateScheduling createScheduling(ReqResCreateScheduling reqResCreateScheduling);
 

@@ -10,6 +10,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -49,6 +50,12 @@ public class ErrorController {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ResponseFailed> handleMissingServletRequestParameterException(MissingServletRequestParameterException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ResponseFailed.builder().error(exception.getMessage()).build());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ResponseFailed> maxUploadSizeExceededException(MaxUploadSizeExceededException exception){
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
                 .body(ResponseFailed.builder().error(exception.getMessage()).build());
     }
 

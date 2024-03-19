@@ -4,8 +4,8 @@ import com.holding.pestcontrol.dto.auth.*;
 import com.holding.pestcontrol.enumm.Role;
 import com.holding.pestcontrol.entity.User;
 import com.holding.pestcontrol.repository.UserRepository;
-import com.holding.pestcontrol.util.EmailUtil;
-import com.holding.pestcontrol.util.OtpUtil;
+import com.holding.pestcontrol.util.EmailUtils;
+import com.holding.pestcontrol.util.OtpUtils;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +36,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final ValidationService validationService;
-    private final OtpUtil otpUtil;
-    private final EmailUtil emailUtil;
+    private final OtpUtils otpUtils;
+    private final EmailUtils emailUtils;
 
     public ReqResRegister register(ReqResRegister registration){
         validationService.validate(registration);
@@ -48,9 +48,9 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username Already Registered");
         }
 
-        String otp = otpUtil.generatorOtp();
+        String otp = otpUtils.generatorOtp();
         try{
-            emailUtil.sendOtpEmail(registration.getEmail(), otp);
+            emailUtils.sendOtpEmail(registration.getEmail(), otp);
         } catch (MessagingException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to send otp please try again");
         }
@@ -153,9 +153,9 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
 
-        String otp = otpUtil.generatorOtp();
+        String otp = otpUtils.generatorOtp();
         try{
-            emailUtil.sendOtpEmail(request.getEmail(), otp);
+            emailUtils.sendOtpEmail(request.getEmail(), otp);
         } catch (MessagingException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error, please try again");
         }
@@ -174,9 +174,9 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
 
-        String otp = otpUtil.generatorOtp();
+        String otp = otpUtils.generatorOtp();
         try{
-            emailUtil.setOtpForgotPassword(request.getEmail(), otp);
+            emailUtils.setOtpForgotPassword(request.getEmail(), otp);
         }catch (MessagingException exception){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
         }
@@ -209,7 +209,7 @@ public class AuthService {
         String username = authentication.getName();
 
         User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "UNAUTHORIZED"));
 
         if (!BCrypt.checkpw(reqResEditPassword.getOldPassword(), user.getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The old password you entered is incorrect");

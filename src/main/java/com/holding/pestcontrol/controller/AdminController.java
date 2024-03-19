@@ -4,6 +4,7 @@ import com.holding.pestcontrol.dto.entityDTO.TreatmentDTO;
 import com.holding.pestcontrol.dto.profileUser.ReqResAdminCreateDetailUser;
 import com.holding.pestcontrol.dto.profileUser.ReqResAdminGetDelete;
 import com.holding.pestcontrol.dto.profileUser.ReqResAdminUpdateDetailUser;
+import com.holding.pestcontrol.dto.response.ResponseSucces;
 import com.holding.pestcontrol.dto.schedule.ReqResCreateScheduling;
 import com.holding.pestcontrol.dto.schedule.ReqResDeleteScheduling;
 import com.holding.pestcontrol.dto.schedule.ReqResUpdateScheduling;
@@ -11,11 +12,20 @@ import com.holding.pestcontrol.entity.*;
 import com.holding.pestcontrol.enumm.FreqType;
 import com.holding.pestcontrol.enumm.Role;
 import com.holding.pestcontrol.enumm.WorkingType;
+import com.holding.pestcontrol.service.UploadFileService;
 import com.holding.pestcontrol.service.admin.AdminServiceImpl;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -25,6 +35,7 @@ import java.util.List;
 public class AdminController {
 
     private final AdminServiceImpl adminServiceImpl;
+    private final UploadFileService uploadFileService;
 
     @GetMapping("/get-role")
     public Role[] getRole(){
@@ -72,13 +83,14 @@ public class AdminController {
     }
 
     @GetMapping("/get-detail-by-email")
-    public ReqResAdminGetDelete get(@RequestBody ReqResAdminGetDelete reqResAdminGetDelete){
-        return adminServiceImpl.getDetailByEmail(reqResAdminGetDelete);
+    public ReqResAdminGetDelete get(@RequestParam String email){
+        return adminServiceImpl.getDetailByEmail(email);
     }
 
     @PatchMapping("/switch-status")
-    public ReqResAdminGetDelete switchStatus(@RequestBody ReqResAdminGetDelete reqResAdminGetDelete){
-        return adminServiceImpl.switchStatus(reqResAdminGetDelete);
+    public ResponseSucces<String> switchStatus(@RequestParam String email){
+        String respon = adminServiceImpl.switchStatus(email);
+        return ResponseSucces.<String>builder().data(respon).build();
     }
 
     @PostMapping("/create-scheduling")
@@ -113,4 +125,20 @@ public class AdminController {
     ){
         return adminServiceImpl.getAllTreatment(companyName, startDate, endDate);
     }
+
+    @PostMapping("/upload-file")
+    public ResponseSucces<String> uploadFile(
+            @RequestParam("companyName") String companyName,
+            @RequestParam("file") MultipartFile multipartFile
+    ) throws IOException {
+        String uploadFile = uploadFileService.uploadFile(companyName, multipartFile);
+        return ResponseSucces.<String>builder().data(uploadFile).build();
+    }
+
+    @GetMapping("/download-file/{fileName}")
+    public ResponseEntity<?> downloadFile(@PathVariable String fileName){
+        byte[] fileInBytes = uploadFileService.downloadFile(fileName);
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("application/pdf")).body(fileInBytes);
+    }
+
 }

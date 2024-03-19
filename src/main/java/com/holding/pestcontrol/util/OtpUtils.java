@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import java.util.Random;
 
 @Component
-public class OtpUtil {
+public class OtpUtils {
 
     public String generatorOtp(){
         Random random = new Random();

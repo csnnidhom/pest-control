@@ -27,16 +27,15 @@ public class ReqResAdminUpdateDetailUser {
     @Email
     private String email;
 
+
     private String namaPerusahaan;
 
+    @NotBlank
     private String alamat;
 
+    @NotBlank
     private String noTelp;
 
     private String namaLengkap;
-
-    private Client client;
-
-    private Worker worker;
 
 }

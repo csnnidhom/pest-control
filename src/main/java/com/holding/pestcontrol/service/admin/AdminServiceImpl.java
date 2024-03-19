@@ -113,7 +113,7 @@ public class AdminServiceImpl implements AdminService{
 
         if (role.equals("CLIENT")){
             Client client = (Client) clientRepository.findByUserAndId(user, reqResAdminUpdateDetailUser.getId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id not found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
 
             client.setNamaPerusahaan(reqResAdminUpdateDetailUser.getNamaPerusahaan());
             client.setAlamat(reqResAdminUpdateDetailUser.getAlamat());
@@ -124,10 +124,11 @@ public class AdminServiceImpl implements AdminService{
 
         } else if (role.equals("WORKER")) {
             Worker worker = (Worker) workerRepository.findByUserAndId(user, reqResAdminUpdateDetailUser.getId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id not found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
 
             worker.setNamaLengkap(reqResAdminUpdateDetailUser.getNamaLengkap());
             worker.setNoTelp(reqResAdminUpdateDetailUser.getNoTelp());
+            worker.setAlamat(reqResAdminUpdateDetailUser.getAlamat());
             workerRepository.save(worker);
             response.setMessage("Success update detail worker");
             response.setId(worker.getId());
@@ -175,10 +176,10 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
-    public ReqResAdminGetDelete getDetailByEmail(ReqResAdminGetDelete reqResAdminGetDelete) {
-        validationService.validate(reqResAdminGetDelete);
+    public ReqResAdminGetDelete getDetailByEmail(String email) {
+        validationService.validate(email);
 
-        User user = userRepository.findByEmail(reqResAdminGetDelete.getEmail())
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
 
         String role = user.getRole().name();
@@ -205,26 +206,22 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
-    public ReqResAdminGetDelete switchStatus(ReqResAdminGetDelete reqResAdminGetDelete) {
-        validationService.validate(reqResAdminGetDelete);
+    public String switchStatus(String email) {
+        validationService.validate(email);
 
-        User user = userRepository.findByEmail(reqResAdminGetDelete.getEmail())
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
 
-        String message;
         if (!user.isStatus()){
             user.setStatus(true);
-            message = "The account is ACTIVE";
+            userRepository.save(user);
+            return "The account is ACTIVE";
         } else {
             user.setStatus(false);
-            message = "The account is NOT ACTIVE";
+            userRepository.save(user);
+            return "The account is NOT ACTIVE";
         }
 
-        userRepository.save(user);
-
-        return ReqResAdminGetDelete.builder()
-                .message(message)
-                .build();
     }
 
     @Override

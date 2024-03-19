@@ -17,8 +17,6 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReqResSetPassword {
 
-    private String message;
-
     @NotBlank
     @Email
     private String email;
