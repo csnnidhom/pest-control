@@ -4,6 +4,8 @@ import com.holding.pestcontrol.dto.entityDTO.*;
 import com.holding.pestcontrol.dto.profileUser.ReqResAdminCreateDetailUser;
 import com.holding.pestcontrol.dto.profileUser.ReqResAdminGetDelete;
 import com.holding.pestcontrol.dto.profileUser.ReqResAdminUpdateDetailUser;
+import com.holding.pestcontrol.dto.response.ResponseSearchClient;
+import com.holding.pestcontrol.dto.response.ResponseSearchWorker;
 import com.holding.pestcontrol.dto.schedule.ReqResCreateScheduling;
 import com.holding.pestcontrol.dto.schedule.ReqResDeleteScheduling;
 import com.holding.pestcontrol.dto.schedule.ReqResSchedulingData;
@@ -15,17 +17,19 @@ import com.holding.pestcontrol.enumm.WorkingType;
 import com.holding.pestcontrol.repository.*;
 import com.holding.pestcontrol.service.SpecificationSearch;
 import com.holding.pestcontrol.service.ValidationService;
+import com.holding.pestcontrol.util.FileUtils;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +43,13 @@ public class AdminServiceImpl implements AdminService{
     private final WorkerRepository workerRepository;
     private final SchedulingRepository schedulingRepository;
     private final ServiceTreatmenSlipRepository serviceTreatmenSlipRepository;
+    private final UploadFileRepository uploadFileRepository;
+
+    private static long MAX_FILE_SIZE = 2048000; //2Mb
+
+    public boolean isValidFileSize(MultipartFile file){
+        return file.getSize() <= MAX_FILE_SIZE;
+    }
 
     @Override
     public Role[] getRole() {
@@ -56,7 +67,7 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
-    public ReqResAdminCreateDetailUser create(ReqResAdminCreateDetailUser reqResAdminCreateDetailUser) {
+    public ReqResAdminCreateDetailUser createDetail(ReqResAdminCreateDetailUser reqResAdminCreateDetailUser) {
         validationService.validate(reqResAdminCreateDetailUser);
 
         ReqResAdminCreateDetailUser response = new ReqResAdminCreateDetailUser();
@@ -78,7 +89,6 @@ public class AdminServiceImpl implements AdminService{
             client.setNoTelp(reqResAdminCreateDetailUser.getNoTelp());
             clientRepository.save(client);
             response.setMessage("Success insert detail client");
-            response.setId(client.getId());
 
         } else if (role.equals("WORKER")) {
             if (reqResAdminCreateDetailUser.getNamaLengkap() == null){
@@ -92,7 +102,6 @@ public class AdminServiceImpl implements AdminService{
             worker.setNoTelp(reqResAdminCreateDetailUser.getNoTelp());
             workerRepository.save(worker);
             response.setMessage("Success insert detail worker");
-            response.setId(worker.getId());
         } else {
             response.setMessage("You are ADMIN");
         }
@@ -100,7 +109,7 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
-    public ReqResAdminUpdateDetailUser update(ReqResAdminUpdateDetailUser reqResAdminUpdateDetailUser) {
+    public ReqResAdminUpdateDetailUser updateDetail(ReqResAdminUpdateDetailUser reqResAdminUpdateDetailUser) {
         validationService.validate(reqResAdminUpdateDetailUser);
 
         ReqResAdminUpdateDetailUser response = new ReqResAdminUpdateDetailUser();
@@ -108,11 +117,10 @@ public class AdminServiceImpl implements AdminService{
         User user = userRepository.findByEmail(reqResAdminUpdateDetailUser.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found"));
 
-
         String role = user.getRole().name();
 
         if (role.equals("CLIENT")){
-            Client client = (Client) clientRepository.findByUserAndId(user, reqResAdminUpdateDetailUser.getId())
+            Client client = (Client) clientRepository.findByUser(user)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
 
             client.setNamaPerusahaan(reqResAdminUpdateDetailUser.getNamaPerusahaan());
@@ -120,10 +128,9 @@ public class AdminServiceImpl implements AdminService{
             client.setNoTelp(reqResAdminUpdateDetailUser.getNoTelp());
             clientRepository.save(client);
             response.setMessage("Success update detail client");
-            response.setId(client.getId());
 
         } else if (role.equals("WORKER")) {
-            Worker worker = (Worker) workerRepository.findByUserAndId(user, reqResAdminUpdateDetailUser.getId())
+            Worker worker = (Worker) workerRepository.findByUser(user)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
 
             worker.setNamaLengkap(reqResAdminUpdateDetailUser.getNamaLengkap());
@@ -131,48 +138,72 @@ public class AdminServiceImpl implements AdminService{
             worker.setAlamat(reqResAdminUpdateDetailUser.getAlamat());
             workerRepository.save(worker);
             response.setMessage("Success update detail worker");
-            response.setId(worker.getId());
         }
         return response;
     }
 
     @Override
-    public List<Client> searchClient(String companyName, String companyAddress, String companyEmail) {
-        Specification<Client> specification = Specification.where(null);
+    public List<ResponseSearchClient> searchClient(String companyName, String companyAddress, String companyEmail) {
+        Specification<Client> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
+            if (companyName != null && !companyName.isEmpty()){
+                predicates.add(SpecificationSearch.companyNameClient(companyName).toPredicate(root,query,criteriaBuilder));
+            }
 
-        if (companyName != null && !companyName.isEmpty()){
-            specification = specification.and(SpecificationSearch.companyNameClient(companyName));
+            if (companyAddress != null && !companyAddress.isEmpty()){
+                predicates.add(SpecificationSearch.companyAddress(companyAddress).toPredicate(root,query,criteriaBuilder));
+            }
+
+            if (companyEmail != null && !companyEmail.isEmpty()){
+                predicates.add(SpecificationSearch.companyEmail(companyEmail).toPredicate(root,query,criteriaBuilder));
+            }
+
+            if (predicates.isEmpty()){
+                return criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+            }else {
+                return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
+            }
+        };
+//        return clientRepository.findAll(specification);
+
+        List<Client> clients = clientRepository.findAll(specification);
+        List<ResponseSearchClient> responseSearchClients = new ArrayList<>();
+
+        for (Client client : clients){
+            Optional<UploadFile> uploadFiles = uploadFileRepository.findByClient(client);
+            responseSearchClients.add(new ResponseSearchClient(client, uploadFiles));
         }
 
-        if (companyAddress != null && !companyAddress.isEmpty()){
-            specification = specification.and(SpecificationSearch.companyAddress(companyAddress));
-        }
-
-        if (companyEmail != null && !companyEmail.isEmpty()){
-            specification = specification.and(SpecificationSearch.companyEmail(companyEmail));
-        }
-
-        return clientRepository.findAll(specification);
+        return responseSearchClients;
     }
 
     @Override
     public List<Worker> searchWorker(String workerFullname, String wokerAddress, String workerEmail) {
-        Specification<Worker> specification = Specification.where(null);
+        Specification<Worker> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
-        if (workerFullname != null && !workerFullname.isEmpty()){
-            specification = specification.and(SpecificationSearch.workerFullname(workerFullname));
-        }
+            if (workerFullname != null && !workerFullname.isEmpty()){
+                predicates.add(SpecificationSearch.workerFullname(workerFullname).toPredicate(root,query,criteriaBuilder));
+            }
 
-        if (wokerAddress != null && !wokerAddress.isEmpty()){
-            specification = specification.and(SpecificationSearch.workerAddress(wokerAddress));
-        }
+            if (wokerAddress != null && !wokerAddress.isEmpty()){
+                predicates.add(SpecificationSearch.workerAddress(wokerAddress).toPredicate(root,query,criteriaBuilder));
+            }
 
-        if (workerEmail != null && !workerEmail.isEmpty()){
-            specification = specification.and(SpecificationSearch.workerEmail(workerEmail));
-        }
+            if (workerEmail != null && !workerEmail.isEmpty()){
+                predicates.add(SpecificationSearch.workerEmail(workerEmail).toPredicate(root,query,criteriaBuilder));
+            }
 
+            if (predicates.isEmpty()){
+                return criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+            }else {
+                return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
+
+            }
+        };
         return workerRepository.findAll(specification);
+
     }
 
     @Override
@@ -198,10 +229,13 @@ public class AdminServiceImpl implements AdminService{
             forAdmin = "You are ADMIN";
         }
 
+        UploadFile uploadFile = uploadFileRepository.findByClient(client).orElse(null);
+
         return ReqResAdminGetDelete.builder()
                 .message(forAdmin)
                 .detailClient(client)
                 .workerDetail(worker)
+                .file(uploadFile != null ? uploadFile.getName() : null)
                 .build();
     }
 
@@ -286,7 +320,6 @@ public class AdminServiceImpl implements AdminService{
         return schedulingRepository.findAll(specification);
     }
 
-
     @Override
     public ReqResUpdateScheduling updateScheduling(ReqResUpdateScheduling reqResUpdateScheduling) {
         validationService.validate(reqResUpdateScheduling);
@@ -368,6 +401,50 @@ public class AdminServiceImpl implements AdminService{
         return serviceTreatmentSlips.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String uploadFile(String companyName, MultipartFile file) throws IOException {
+        Client client = (Client) clientRepository.findByNamaPerusahaan(companyName)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client Not Found "));
+
+        UploadFile existingFile = uploadFileRepository.findByClient(client).orElse(null);
+
+        if (existingFile != null){
+            uploadFileRepository.delete(existingFile);
+        }
+
+        if (!isValidFileSize(file)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Maximum file size is 2 MB");
+        }
+
+        if (!file.getContentType().equals("application/pdf")){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The file must be in PDF format");
+        }
+
+        if (file.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Select files to upload");
+        }
+
+        UploadFile newUploadFile = new UploadFile();
+        newUploadFile.setId(UUID.randomUUID().toString());
+        newUploadFile.setName(file.getOriginalFilename());
+        newUploadFile.setType(file.getContentType());
+        newUploadFile.setFileData(FileUtils.compressFile(file.getBytes()));
+        newUploadFile.setClient(client);
+        uploadFileRepository.save(newUploadFile);
+
+        return "Success upload " + file.getOriginalFilename();
+
+    }
+
+    @Override
+    public byte[] downloadFile(String fileName) {
+        Optional<UploadFile> uploadFile = Optional.ofNullable(uploadFileRepository.findByName(fileName)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found")));
+
+        byte[] fileInBytes = FileUtils.decompressFile(uploadFile.get().getFileData());
+        return fileInBytes;
     }
 
     private TreatmentDTO convertToDTO(ServiceTreatmentSlip serviceTreatmentSlip) {

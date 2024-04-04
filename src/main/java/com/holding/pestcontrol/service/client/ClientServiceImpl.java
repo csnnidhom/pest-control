@@ -5,12 +5,10 @@ import com.holding.pestcontrol.dto.profileUser.ReqResClient;
 import com.holding.pestcontrol.dto.treatment.ReqResChangeStatusTreatment;
 import com.holding.pestcontrol.dto.treatment.ReqResSuggestionTreatment;
 import com.holding.pestcontrol.entity.*;
-import com.holding.pestcontrol.repository.ClientRepository;
-import com.holding.pestcontrol.repository.SchedulingRepository;
-import com.holding.pestcontrol.repository.ServiceTreatmenSlipRepository;
-import com.holding.pestcontrol.repository.UserRepository;
+import com.holding.pestcontrol.repository.*;
 import com.holding.pestcontrol.service.SpecificationSearch;
 import com.holding.pestcontrol.service.ValidationService;
+import com.holding.pestcontrol.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -24,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +36,7 @@ public class ClientServiceImpl implements ClientService {
     private final UserRepository userRepository;
     private final SchedulingRepository schedulingRepository;
     private final ServiceTreatmenSlipRepository serviceTreatmenSlipRepository;
+    private final UploadFileRepository uploadFileRepository;
 
     @Override
     public ReqResClient getDetailProfile() {
@@ -49,8 +49,12 @@ public class ClientServiceImpl implements ClientService {
         Client client = (Client) clientRepository.findByUser(user)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Detail Client Not Found "));
 
+        UploadFile uploadFile = uploadFileRepository.findByClient(client)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found"));
+
         return ReqResClient.builder()
                 .detailClient(client)
+                .file(uploadFile.getName())
                 .build();
 
     }
@@ -151,6 +155,24 @@ public class ClientServiceImpl implements ClientService {
                 .message("Success create suggestion")
                 .suggestion(serviceTreatmentSlip.getSaranClient())
                 .build();
+    }
+
+    @Override
+    public byte[] downloadFileClient() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found"));
+
+        Client client = (Client) clientRepository.findByUser(user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Detail Client Not Found "));
+
+        Optional<UploadFile> uploadFile = Optional.ofNullable(uploadFileRepository.findByClient(client)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found")));
+
+        byte[] fileInBytes = FileUtils.decompressFile(uploadFile.get().getFileData());
+        return fileInBytes;
     }
 
     private TreatmentDTO convertToDTO(ServiceTreatmentSlip serviceTreatmentSlip) {

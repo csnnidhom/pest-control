@@ -14,7 +14,6 @@ import java.util.Optional;
 public interface WorkerRepository extends JpaRepository<Worker, String>, JpaSpecificationExecutor<Worker> {
     Optional<Object> findByUser(User user);
 
-    Optional<Object> findByUserAndId(User user, String id);
 
     Optional<Object> findByNamaLengkap(String namaLengkap);
 }

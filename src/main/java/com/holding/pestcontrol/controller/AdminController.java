@@ -4,6 +4,7 @@ import com.holding.pestcontrol.dto.entityDTO.TreatmentDTO;
 import com.holding.pestcontrol.dto.profileUser.ReqResAdminCreateDetailUser;
 import com.holding.pestcontrol.dto.profileUser.ReqResAdminGetDelete;
 import com.holding.pestcontrol.dto.profileUser.ReqResAdminUpdateDetailUser;
+import com.holding.pestcontrol.dto.response.ResponseSearchClient;
 import com.holding.pestcontrol.dto.response.ResponseSucces;
 import com.holding.pestcontrol.dto.schedule.ReqResCreateScheduling;
 import com.holding.pestcontrol.dto.schedule.ReqResDeleteScheduling;
@@ -12,11 +13,7 @@ import com.holding.pestcontrol.entity.*;
 import com.holding.pestcontrol.enumm.FreqType;
 import com.holding.pestcontrol.enumm.Role;
 import com.holding.pestcontrol.enumm.WorkingType;
-import com.holding.pestcontrol.service.UploadFileService;
 import com.holding.pestcontrol.service.admin.AdminServiceImpl;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -35,7 +32,6 @@ import java.util.List;
 public class AdminController {
 
     private final AdminServiceImpl adminServiceImpl;
-    private final UploadFileService uploadFileService;
 
     @GetMapping("/get-role")
     public Role[] getRole(){
@@ -54,16 +50,16 @@ public class AdminController {
 
     @PostMapping("/create-detail-user")
     public ReqResAdminCreateDetailUser create(@RequestBody ReqResAdminCreateDetailUser request){
-        return adminServiceImpl.create(request);
+        return adminServiceImpl.createDetail(request);
     }
 
     @PutMapping("/update-detail-user")
     public ReqResAdminUpdateDetailUser update(@RequestBody ReqResAdminUpdateDetailUser request){
-        return adminServiceImpl.update(request);
+        return adminServiceImpl.updateDetail(request);
     }
 
     @GetMapping("/search-client")
-    public List<Client> searchClient(
+    public List<ResponseSearchClient> searchClient(
             @RequestParam(required = false) String companyName,
             @RequestParam(required = false) String companyAddress,
             @RequestParam(required = false) String companyEmail
@@ -131,13 +127,13 @@ public class AdminController {
             @RequestParam("companyName") String companyName,
             @RequestParam("file") MultipartFile multipartFile
     ) throws IOException {
-        String uploadFile = uploadFileService.uploadFile(companyName, multipartFile);
+        String uploadFile = adminServiceImpl.uploadFile(companyName, multipartFile);
         return ResponseSucces.<String>builder().data(uploadFile).build();
     }
 
     @GetMapping("/download-file/{fileName}")
     public ResponseEntity<?> downloadFile(@PathVariable String fileName){
-        byte[] fileInBytes = uploadFileService.downloadFile(fileName);
+        byte[] fileInBytes = adminServiceImpl.downloadFile(fileName);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("application/pdf")).body(fileInBytes);
     }
 

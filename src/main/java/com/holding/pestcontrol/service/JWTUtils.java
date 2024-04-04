@@ -2,6 +2,7 @@ package com.holding.pestcontrol.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 @Component
+@Slf4j
 public class JWTUtils {
 
     private SecretKey Key;

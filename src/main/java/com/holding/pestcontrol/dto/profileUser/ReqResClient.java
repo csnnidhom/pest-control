@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.holding.pestcontrol.entity.Client;
+import com.holding.pestcontrol.entity.UploadFile;
 import com.holding.pestcontrol.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -32,5 +33,7 @@ public class ReqResClient {
     private String noTelp;
 
     private Client detailClient;
+
+    private String file;
 
 }

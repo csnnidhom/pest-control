@@ -1,5 +1,6 @@
 package com.holding.pestcontrol.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,8 +18,10 @@ public class UploadFile {
 
     private String name;
 
+    @JsonIgnore
     private String type;
 
+    @JsonIgnore
     @Lob()
     @Column(name = "data", length = 2048000)
     private byte[] fileData;

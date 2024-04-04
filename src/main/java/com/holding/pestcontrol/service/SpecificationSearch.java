@@ -3,7 +3,9 @@ package com.holding.pestcontrol.service;
 import com.holding.pestcontrol.entity.*;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,8 +15,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class SpecificationSearch {
 
-
-    public static Specification<Scheduling> findAllScheduleByWorkerAuthentication(String companyName,LocalDate startDate, LocalDate endDate){
+    public static Specification<Scheduling> findAllScheduleByWorkerAuthentication(String companyName, LocalDate startDate, LocalDate endDate){
         return (root, query, criteriaBuilder) -> {
 
             String authentication = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -156,6 +157,19 @@ public class SpecificationSearch {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.like(criteriaBuilder.lower(root.get("namaPerusahaan")), "%" + companyName.toLowerCase() + "%");
     }
+//    public static Specification<Client> findAllClientStatusTrue() {
+//        return (root, query, criteriaBuilder) -> {
+//            Join<Client, User> userJoin = root.join("user");
+//            return criteriaBuilder.isTrue(userJoin.get("status"));
+//        };
+//    }
+//
+//    public static Specification<Worker> findAllWorkerStatusTrue() {
+//        return (root, query, criteriaBuilder) -> {
+//            Join<Client, Worker> userJoin = root.join("user");
+//            return criteriaBuilder.isTrue(userJoin.get("status"));
+//        };
+//    }
 
     public static Specification<Client> companyAddress(String companyAddress){
         return (root, query, criteriaBuilder) ->

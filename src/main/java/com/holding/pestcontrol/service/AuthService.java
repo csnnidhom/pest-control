@@ -143,7 +143,7 @@ public class AuthService {
             userRepository.save(user);
             return "you have been verified, please login";
         }else if (!user.getOtp().equals(requestVerifikasiEmail.getOtp())) {
-            return "OTP salah";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Otp salah");
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please send verification again because the OTP has expired");
     }
@@ -165,7 +165,6 @@ public class AuthService {
 
         return RequestGenerateOtp.builder()
                 .success("OTP sent successfully")
-                .email(user.getEmail())
                 .build();
     }
 
@@ -202,26 +201,23 @@ public class AuthService {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please regenerate otp because otp expired and try again");
     }
 
-    public ReqResEditPassword editPassword(ReqResEditPassword reqResEditPassword) {
-        validationService.validate(reqResEditPassword);
+    public ReqResEditEmailPassword editEmailPassword(ReqResEditEmailPassword reqResEditEmailPassword) {
+        validationService.validate(reqResEditEmailPassword);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        User user = userRepository.findByEmail(username)
+        User user = userRepository.findByEmail(reqResEditEmailPassword.getOldEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "UNAUTHORIZED"));
 
-        if (!BCrypt.checkpw(reqResEditPassword.getOldPassword(), user.getPassword())){
+        if (!BCrypt.checkpw(reqResEditEmailPassword.getOldPassword(), user.getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The old password you entered is incorrect");
         }
 
-        user.setPassword(passwordEncoder.encode(reqResEditPassword.getNewPassword()));
+        user.setEmail(reqResEditEmailPassword.getNewEmail());
+        user.setPassword(passwordEncoder.encode(reqResEditEmailPassword.getNewPassword()));
         userRepository.save(user);
 
-        return ReqResEditPassword.builder()
-                .message("Success edit password")
+        return ReqResEditEmailPassword.builder()
+                .message("Success edit email or password")
                 .build();
 
     }
-
 }

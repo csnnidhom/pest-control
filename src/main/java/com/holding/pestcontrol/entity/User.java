@@ -40,20 +40,16 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @JsonIgnore
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @JsonIgnore
     @UpdateTimestamp
     @Column(name = "update_at")
     private LocalDateTime updateAt;
 
-    @JsonIgnore
     private boolean active;
 
-    @JsonIgnore
     private boolean status = true;
 
     @JsonIgnore

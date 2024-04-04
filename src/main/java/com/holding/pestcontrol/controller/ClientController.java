@@ -2,13 +2,15 @@ package com.holding.pestcontrol.controller;
 
 import com.holding.pestcontrol.dto.entityDTO.TreatmentDTO;
 import com.holding.pestcontrol.dto.profileUser.ReqResClient;
-import com.holding.pestcontrol.dto.response.ResponseSucces;
 import com.holding.pestcontrol.dto.treatment.ReqResChangeStatusTreatment;
 import com.holding.pestcontrol.dto.treatment.ReqResSuggestionTreatment;
 import com.holding.pestcontrol.entity.Scheduling;
 import com.holding.pestcontrol.service.client.ClientServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -55,5 +57,11 @@ public class ClientController {
     @PatchMapping("/create-suggestion")
     public ReqResSuggestionTreatment createSuggestion(@RequestBody ReqResSuggestionTreatment reqResSuggestionTreatment){
         return clientServiceImpl.createSuggestion(reqResSuggestionTreatment);
+    }
+
+    @GetMapping("/download-file")
+    public ResponseEntity<?> downloadFileClient(){
+        byte[] fileInBytes = clientServiceImpl.downloadFileClient();
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("application/pdf")).body(fileInBytes);
     }
 }

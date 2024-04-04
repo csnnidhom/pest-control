@@ -21,4 +21,6 @@ public interface ClientService {
     ReqResChangeStatusTreatment changeStatusTreatment(ReqResChangeStatusTreatment reqResChangeStatusTreatment);
 
     ReqResSuggestionTreatment createSuggestion(ReqResSuggestionTreatment reqResSuggestionTreatment);
+
+    byte[] downloadFileClient();
 }

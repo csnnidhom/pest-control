@@ -50,7 +50,7 @@ public class AuthController {
     @PutMapping("/forgot-password")
     public ResponseSucces<String> forgotPassword(@RequestBody RequestForgotPassword request){
         authService.forgotpassword(request);
-        return ResponseSucces.<String>builder().data("Otp sudah terkirim, silahkan lakukan verifikasi otp untuk melakukan lupa password").build();
+        return ResponseSucces.<String>builder().data("Otp sudah terkirim, silahkan buka email anda").build();
     }
 
     @PutMapping("/set-password")
@@ -59,9 +59,9 @@ public class AuthController {
         return ResponseSucces.<String>builder().data(response).build();
     }
 
-    @PatchMapping("/edit-password")
-    public ReqResEditPassword editPassword(@RequestBody ReqResEditPassword reqResEditPassword){
-        return authService.editPassword(reqResEditPassword);
+    @PatchMapping("/edit-email-password")
+    public ReqResEditEmailPassword editPassword(@RequestBody ReqResEditEmailPassword reqResEditEmailPassword){
+        return authService.editEmailPassword(reqResEditEmailPassword);
     }
 
 }

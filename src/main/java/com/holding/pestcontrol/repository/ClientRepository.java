@@ -13,11 +13,8 @@ import java.util.Optional;
 @Repository
 public interface ClientRepository extends JpaRepository<Client, String>, JpaSpecificationExecutor<Client> {
 
-    Optional<Object> findByUserAndId(User user, String id);
-
     Optional<Object> findByUser(User user);
 
     Optional<Object> findByNamaPerusahaan(String namaPerusahaan);
-
 
 }

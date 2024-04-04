@@ -21,8 +21,6 @@ public class ReqResAdminCreateDetailUser {
 
     private String message;
 
-    private String id;
-
     @NotBlank
     @Email
     private String email;

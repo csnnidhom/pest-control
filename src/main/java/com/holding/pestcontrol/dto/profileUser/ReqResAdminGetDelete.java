@@ -28,4 +28,6 @@ public class ReqResAdminGetDelete {
     private Client detailClient;
 
     private Worker workerDetail;
+
+    private String file;
 }
