@@ -1,5 +1,6 @@
 package com.holding.pestcontrol.controller;
 
+import com.holding.pestcontrol.dto.entityDTO.SchedulingDTO;
 import com.holding.pestcontrol.dto.entityDTO.TreatmentDTO;
 import com.holding.pestcontrol.dto.profileUser.ReqResAdminCreateDetailUser;
 import com.holding.pestcontrol.dto.profileUser.ReqResAdminGetDelete;
@@ -103,6 +104,12 @@ public class AdminController {
     {
         return adminServiceImpl.searchSchedule(companyName, startDate, endDate);
     }
+
+    @GetMapping("/get_schedule-by-id")
+    public SchedulingDTO getScheduleById(@RequestParam(required = true) String id){
+        return adminServiceImpl.getDataSchedulingById(id);
+    }
+
     @PutMapping("/update-scheduling")
     public ReqResUpdateScheduling updateScheduling(@RequestBody ReqResUpdateScheduling reqResUpdateScheduling){
         return adminServiceImpl.updateScheduling(reqResUpdateScheduling);

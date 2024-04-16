@@ -91,7 +91,7 @@ public class SpecificationSearch {
                     LocalDate endDateNow = LocalDate.now();
 
                     return criteriaBuilder.and(
-                            criteriaBuilder.like(root.get("client").get("namaPerusahaan"), "%" + companyName.toLowerCase() + "%"),
+                            criteriaBuilder.like(root.get("scheduling").get("client").get("namaPerusahaan"), "%" + companyName.toLowerCase() + "%"),
                             criteriaBuilder.equal(userJoin.get("email"), authentication),
                             criteriaBuilder.between(root.get("dateWorking"), startDateNow, endDateNow)
                     );

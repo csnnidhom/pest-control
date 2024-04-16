@@ -217,22 +217,21 @@ public class AdminServiceImpl implements AdminService{
 
         Client client = null;
         Worker worker = null;
-        String forAdmin = null;
 
         if (role.equals("CLIENT")) {
             client = (Client) clientRepository.findByUser(user)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Detail client not found"));
-        } else if (role.equals("WORKER")) {
+        }
+
+        if (role.equals("WORKER")) {
             worker = (Worker) workerRepository.findByUser(user)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Detail worker not found"));
-        } else {
-            forAdmin = "You are ADMIN";
         }
 
         UploadFile uploadFile = uploadFileRepository.findByClient(client).orElse(null);
 
         return ReqResAdminGetDelete.builder()
-                .message(forAdmin)
+                .user(user)
                 .detailClient(client)
                 .workerDetail(worker)
                 .file(uploadFile != null ? uploadFile.getName() : null)
@@ -318,6 +317,31 @@ public class AdminServiceImpl implements AdminService{
         }
 
         return schedulingRepository.findAll(specification);
+    }
+
+    @Override
+    public SchedulingDTO getDataSchedulingById(String id) {
+        validationService.validate(id);
+
+        Scheduling scheduling = schedulingRepository.findById(id)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id Schedul Not Found"));
+
+        SchedulingDTO schedulingDTO = new SchedulingDTO();
+        schedulingDTO.setIdSchedule(id);
+        schedulingDTO.setClient(convertClientToDTO(Collections.singletonList(scheduling.getClient())));
+        schedulingDTO.setWorker(convertWorkerToDTO(Collections.singletonList(scheduling.getWorker())));
+        schedulingDTO.setStartContractPeriod(scheduling.getStartContractPeriod());
+        schedulingDTO.setEndContractPeriod(scheduling.getEndContractPeriod());
+        schedulingDTO.setWorkingType(scheduling.getWorkingType());
+        schedulingDTO.setFreq(scheduling.getFreq());
+        schedulingDTO.setFreqType(scheduling.getFreqType());
+        schedulingDTO.setTimeStart(scheduling.getTimeStart());
+        schedulingDTO.setTimeEnd(scheduling.getTimeEnd());
+        schedulingDTO.setPic(scheduling.getPic());
+        schedulingDTO.setNoTelpPic(scheduling.getNoTelpPic());
+        schedulingDTO.setDateWorking(scheduling.getDateWorking());
+
+        return schedulingDTO;
     }
 
     @Override

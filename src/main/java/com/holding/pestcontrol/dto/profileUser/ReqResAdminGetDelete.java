@@ -3,6 +3,7 @@ package com.holding.pestcontrol.dto.profileUser;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.holding.pestcontrol.entity.Client;
+import com.holding.pestcontrol.entity.User;
 import com.holding.pestcontrol.entity.Worker;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -28,6 +29,8 @@ public class ReqResAdminGetDelete {
     private Client detailClient;
 
     private Worker workerDetail;
+
+    private User user;
 
     private String file;
 }

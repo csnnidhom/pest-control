@@ -2,6 +2,7 @@ package com.holding.pestcontrol.service.worker;
 
 import com.holding.pestcontrol.dto.entityDTO.TreatmentDTO;
 import com.holding.pestcontrol.dto.profileUser.ReqResWorker;
+import com.holding.pestcontrol.dto.schedule.ReqResSchedulingData;
 import com.holding.pestcontrol.dto.treatment.ReqResTreatmentCreate;
 import com.holding.pestcontrol.dto.treatment.ReqResTreatmentDelete;
 import com.holding.pestcontrol.dto.treatment.ReqResTreatmentUpdate;

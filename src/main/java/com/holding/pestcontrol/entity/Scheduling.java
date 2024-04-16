@@ -37,7 +37,7 @@ public class Scheduling {
     @Enumerated(EnumType.STRING)
     private WorkingType workingType;
 
-    private int freq;
+    private Integer freq;
 
     @Enumerated(EnumType.STRING)
     private FreqType freqType;

@@ -33,7 +33,7 @@ public class ReqResSchedulingData {
 
     private String workingType;
 
-    private int freq;
+    private Integer freq;
 
     private String freqType;
 
